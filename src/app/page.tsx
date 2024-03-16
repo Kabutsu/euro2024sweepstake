@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { CreatePost } from "@/app/_components/create-post";
 import { api } from "@/trpc/server";
+import { PostStash } from "./_components/post-stash";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -60,6 +61,8 @@ async function CrudShowcase() {
       )}
 
       <CreatePost />
+
+      <PostStash />
     </div>
   );
 }
