@@ -1,16 +1,19 @@
 "use server";
 
-import { Client } from '@upstash/qstash';
-
-const client = new Client({
-  token: process.env.UPSTASH_TOKEN!,
-});
+import { client, getBaseUrl } from "@/server/api/upstash";
 
 export async function startBackgroundJob() {
-  await client.publishJSON({
-    url: "https://euro2024test.requestcatcher.com/test",
-    body: {
-      "hello": "world"
-    }
-  })
+  try {
+    const response = await client.publishJSON({
+      "url": getBaseUrl() + "/long-task",
+      body: {
+        "hello": "world",
+      },
+    });
+
+    return response.messageId;
+  } catch (error) {
+    console.error("Failed to start background job", error);
+    return null;
+  }
 };
