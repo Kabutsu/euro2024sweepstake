@@ -2,7 +2,7 @@ import { Client } from '@upstash/qstash';
 
 export function getBaseUrl() {
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  return "https://deveuro2024sweepstake.vercel.app";
 };
 
 export const client = new Client({

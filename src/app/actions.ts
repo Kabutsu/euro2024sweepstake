@@ -4,8 +4,10 @@ import { client, getBaseUrl } from "@/server/api/upstash";
 
 export async function startBackgroundJob() {
   try {
+    const url = getBaseUrl() + "/api/upstash/long-task";
+    console.log(url);
     const response = await client.publishJSON({
-      "url": getBaseUrl() + "/long-task",
+      url,
       body: {
         "hello": "world",
       },
