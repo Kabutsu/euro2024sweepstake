@@ -1,82 +1,75 @@
+import Image from 'next/image';
 import Link from "next/link";
 
-import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
+
+import TopBar from './_components/top-bar';
+
+const selectAGroup = (
+  <>
+    <span className="inline sm:hidden">Hit <Image src="/images/bars-solid.svg" alt="menu" width={0} height={0} className="w-6 h-6 pb-1 inline"/> to select a group</span>
+    <span className="hidden sm:inline">Select a group</span>
+  </>
+);
+
+const signInButton = (
+  <Link
+    href="/api/auth/signin"
+    className="rounded-full bg-black/10 px-3 py-1 sm:px-4 sm:py-3 mr-1 sm:mr-2 text-xl sm:text-2xl font-semibold no-underline transition hover:bg-black/20"
+  >
+    Sign in
+  </Link>
+);
+
+const topBarTitle = (
+  <span className="inline">Euro <span className="text-[#1963E0]">2024</span> Sweepstake</span>
+);
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
   const session = await getServerAuthSession();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
+    <div className="relative flex min-h-screen flex-col items-center bg-gradient-to-b from-[rgb(249,250,252)] to-[rgb(242,243,246)] text-gray-950">
+      {session && (
+        <TopBar title={topBarTitle} hideOnDesktop>
+          <Link href="/api/auth/signout">
+            <Image src="/images/user-solid.svg" alt="logout" width={0} height={0} className="h-7 w-7 cursor-pointer" />
           </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
-          </p>
-
-          <div className="flex flex-col items-center justify-center gap-4">
-            <p className="text-center text-2xl text-white">
-              {session && <span>Logged in as {session.user?.name}</span>}
-            </p>
-            <Link
-              href={session ? "/api/auth/signout" : "/api/auth/signin"}
-              className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-            >
-              {session ? "Sign out" : "Sign in"}
-            </Link>
-          </div>
-        </div>
-
-        <CrudShowcase />
-      </div>
-    </main>
-  );
-}
-
-async function CrudShowcase() {
-  const session = await getServerAuthSession();
-  if (!session?.user) return null;
-
-  const latestPost = await api.post.getLatest();
-
-  return (
-    <div className="w-full max-w-xs">
-      {latestPost ? (
-        <p className="truncate">Your most recent post: {latestPost.name}</p>
-      ) : (
-        <p>You have no posts yet.</p>
+        </TopBar>
       )}
 
-      <CreatePost />
+      <div className="container flex flex-col items-center justify-center gap-12 md:gap-24 px-4 pb-16 pt-10 sm:pt-20 ">
+        <h1 className="text-5xl font-extrabold tracking-tight md:text-[5rem] text-center">
+          Euro <span className="text-[#1963E0]">2024</span> Sweepstake
+        </h1>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:gap-32 text-center sm:text-left">
+          <div className="flex max-w-64 flex-col gap-4 p4">
+            <h3 className="text-3xl font-bold">Get Involved</h3>
+            <div className="text-xl">
+              Setup, join and manage your own sweepstake with friends and family.
+            </div>
+          </div>
+          <div className="flex max-w-64 flex-col gap-4 p4">
+            <h3 className="text-3xl font-bold">Stay Connected</h3>
+            <div className="text-xl">
+              Live chat for each sweepstake group so that you never miss a moment.
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-center gap-2 text-center sm:text-left">
+          <p className="text-2xl px-10 sm:px-0">
+            {session ? selectAGroup : signInButton} and get started.
+          </p>
+        </div>
+      </div>
+      {session && (
+        <Link
+          href="/api/auth/signout"
+          className="hidden sm:block absolute top-6 right-8 rounded-full bg-black/10 px-4 py-2 font-semibold no-underline transition hover:bg-black/20"
+        >
+          Sign out
+        </Link>
+      )}
     </div>
   );
-}
+};
