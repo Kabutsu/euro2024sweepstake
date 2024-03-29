@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <TRPCReactProvider>
-          <main className="flex flex-row">
+          <main className="relative flex flex-row">
             <Suspense fallback={<SidebarSkeleton />}>
               <Sidebar />
             </Suspense>
