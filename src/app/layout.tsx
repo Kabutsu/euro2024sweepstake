@@ -1,8 +1,12 @@
 import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
+import { Suspense } from 'react';
 
 import { TRPCReactProvider } from "~/trpc/react";
+
+import Sidebar from './_sidebar';
+import SidebarSkeleton from './_sidebar/skeleton';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +27,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <main className="flex flex-row">
+            <div className="w-80">
+              <Suspense fallback={<SidebarSkeleton />}>
+                <Sidebar />
+              </Suspense>
+            </div>
+            <div className="flex-1">
+              {children}
+            </div>
+          </main>
+        </TRPCReactProvider>
       </body>
     </html>
   );
