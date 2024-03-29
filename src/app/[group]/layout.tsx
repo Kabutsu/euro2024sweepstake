@@ -4,17 +4,19 @@ export default function Layout({ children, params: { group: groupId } }: { child
   console.log('GroupId:', groupId);
   
   return (
-    <>
-      <div>
-        <p>Group Name</p>
-        <nav>
-          <Link href="draw">Draw</Link>
-          <Link href="chat">Chat</Link>
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <div className="flex flex-row justify-between w-full h-16 p-4 pr-8 shadow-md">
+        <h1 className="font-semibold text-base">
+          Group Name
+        </h1>
+        <nav className="flex flex-row gap-6 font-light text-base">
+          <Link href="draw" className="min-w-16 text-center">Draw</Link>
+          <Link href="chat" className="min-w-16 text-center">Chat</Link>
         </nav>
       </div>
-      <div>
+      <div className="flex flex-1">
         {children}
       </div>
-    </>
+    </div>
   );
 }
