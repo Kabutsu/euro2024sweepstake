@@ -1,5 +1,8 @@
 import { api } from "~/trpc/server";
+import { getServerAuthSession } from '~/server/auth';
+
 import Layout from './layout';
+
 import Scroller from './_components/scroller';
 import SearchBar from './_components/searchbar';
 import NavItem from './_components/nav-item';
@@ -9,6 +12,12 @@ import NavItem from './_components/nav-item';
 // Passes all groups to the Scroller component.
 // Scroller is a client component which uses React Query to search for groups.
 export default async function Sidebar() {
+  const session = await getServerAuthSession();
+
+  if (!session) {
+    return null;
+  }
+
   const allPosts = await api.post.getAll();
 
   return (
