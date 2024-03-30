@@ -7,12 +7,15 @@ import {
   getMessages,
 } from '../_actions';
 
+import MessageBubble from './message-bubble';
+
 type Props = {
   initialData: MessagesType;
   groupId: string;
+  userId: string;
 };
 
-const MessagesArea = ({ initialData, groupId }: Props) => {
+const MessagesArea = ({ initialData, groupId, userId }: Props) => {
   const { data, isLoading } = useQuery({
     queryKey: ['messages', groupId],
     queryFn: () => getMessages(groupId),
@@ -25,11 +28,8 @@ const MessagesArea = ({ initialData, groupId }: Props) => {
 
   return (
     <div className="flex flex-col flex-1 p-4 overflow-y-auto">
-      {data.map((message) => (
-        <div key={message.id} className="flex items-center space-x-2">
-          <p className="font-semibold">{message.createdBy.name}</p>
-          <p className="text-sm">{message.name}</p>
-        </div>
+      {data.map(({ id, name: message, createdBy }) => (
+        <MessageBubble key={id} message={message} isSender={createdBy.id === userId} />
       ))}
     </div>
   );
