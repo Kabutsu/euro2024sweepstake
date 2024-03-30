@@ -1,12 +1,10 @@
+import LoadingGroups from './_components/loading-groups';
 import Layout from './layout';
 
 const Skeleton = () => {
   return (
     <Layout>
-      <h1 className="h-16 font-bold text-2xl">
-        Groups
-      </h1>
-      <p>Loading...</p>
+      <LoadingGroups />
     </Layout>
   );
 };
