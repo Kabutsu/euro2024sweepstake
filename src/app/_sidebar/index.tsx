@@ -18,7 +18,7 @@ export default async function Sidebar() {
     return null;
   }
 
-  const allPosts = await api.post.getAll();
+  const allGroups = await api.group.getAll();
 
   return (
     <Layout>
@@ -29,8 +29,8 @@ export default async function Sidebar() {
         <SearchBar />
       </div>
       <Scroller>
-        {allPosts.map((post) => (
-          <NavItem key={post.id} post={post} />
+        {allGroups.map((group) => (
+          <NavItem key={group.id} group={group} />
         ))}
       </Scroller>
     </Layout>

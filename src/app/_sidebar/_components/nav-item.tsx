@@ -7,24 +7,24 @@ import { api } from '~/trpc/server';
 
 import { useSidebar } from '~/zustand';
 
-type PostType = NonNullable<
-  Awaited<ReturnType<typeof api.post.getAll>>
+type GroupType = NonNullable<
+  Awaited<ReturnType<typeof api.group.getAll>>
 >[number];
 
-const NavItem = ({ post }: { post: PostType }) => {
+const NavItem = ({ group }: { group: GroupType }) => {
   const pathname = usePathname();
   const { toggle } = useSidebar();
 
-  const groupId = new RegExp(`/${post.id.toString()}/`);
+  const groupId = new RegExp(`/${group.id}/`);
   const isActive = groupId.test(pathname);
 
   return (
-    <Link href={`/${post.id}/chat`} className={`flex flex-col items-left justify-between w-full p-3 rounded-md ${isActive ? "bg-gray-200" : "hover:bg-gray-100"}`} onClick={toggle}>
+    <Link href={`/${group.id}/chat`} className={`flex flex-col items-left justify-between w-full p-3 rounded-md ${isActive ? "bg-gray-200" : "hover:bg-gray-100"}`} onClick={toggle}>
       <p className="font-semibold text-base truncate">
-        {post.name}
+        {group.name}
       </p>
       <p className="font-light text-sm truncate">
-        {post.createdAt.toLocaleString()}
+        {group.posts.at(0)?.name || "No messages yet"}
       </p>
     </Link>
   );
