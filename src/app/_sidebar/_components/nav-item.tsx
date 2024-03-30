@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { api } from '~/trpc/server';
+import { type api } from '~/trpc/server';
 
 import { useSidebar } from '~/zustand';
 
@@ -24,7 +24,7 @@ const NavItem = ({ group }: { group: GroupType }) => {
         {group.name}
       </p>
       <p className="font-light text-sm truncate">
-        {group.posts.at(0)?.name || "No messages yet"}
+        {group.posts.at(0)?.name ?? "No messages yet"}
       </p>
     </Link>
   );
