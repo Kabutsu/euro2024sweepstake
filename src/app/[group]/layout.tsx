@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import TopBar from '../_components/top-bar';
+import { Suspense } from 'react';
 
 export default function Layout({ children, params: { group: groupId } }: { children: React.ReactNode, params: { group: string } }) {
   console.log('GroupId:', groupId);
@@ -20,8 +21,10 @@ export default function Layout({ children, params: { group: groupId } }: { child
           </Link>
         </nav>
       </TopBar>
-      <div className="flex flex-1">
-        {children}
+      <div className="flex flex-1 w-full">
+        <Suspense fallback={<div>Loading...</div>}>
+          {children}
+        </Suspense>
       </div>
     </div>
   );
