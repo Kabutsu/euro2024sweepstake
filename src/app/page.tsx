@@ -29,7 +29,7 @@ export default async function Home() {
   const session = await getServerAuthSession();
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center bg-gradient-to-b from-[rgb(249,250,252)] to-[rgb(242,243,246)] text-gray-950">
+    <div className="relative flex h-dvh flex-col items-center bg-gradient-to-b from-[rgb(249,250,252)] to-[rgb(242,243,246)] text-gray-950">
       {session && (
         <TopBar title={topBarTitle} hideOnDesktop>
           <Link href="/api/auth/signout">

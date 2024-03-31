@@ -24,6 +24,9 @@ model Post {
     createdBy   User   @relation(fields: [createdById], references: [id])
     createdById String
 
+    postedIn   Group   @relation(fields: [groupId], references: [id])
+    groupId    String
+
     @@index([name])
 }
 
@@ -63,6 +66,14 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    groups        Group[]
+}
+
+model Group {
+    id   String    @id @default(cuid())
+    name String
+    posts Post[]
+    users User[]
 }
 
 model VerificationToken {
