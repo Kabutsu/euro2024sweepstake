@@ -2,21 +2,21 @@
 
 import { useState } from 'react';
 
-import { usePosts } from '../_queries';
+import { useMessages } from '../_queries';
 
 type Props = {
   groupId: string;
 };
 
 const InputField = ({ groupId }: Props) => {
-  const { isLoading, createPost } = usePosts({ groupId });
+  const { isLoading, sendMessage } = useMessages({ groupId});
   const [message, setMessage] = useState('');
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost(message);
+        sendMessage({ name: message, postedIn: groupId });
         setMessage('');
       }}
       className="flex items-center justify-center"

@@ -1,30 +1,21 @@
 'use client';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { type MessagesType } from '../_actions';
 
-import {
-  type MessagesType,
-  getMessages,
-  createMessage,
-} from '../_actions';
+import { api } from '~/trpc/react';
 
-export function usePosts({
+export const useMessages = ({
   groupId,
   initialData = undefined,
 }: {
   groupId: string;
   initialData?: MessagesType;
-}) {
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['posts', groupId],
-    queryFn: () => getMessages(groupId),
-    initialData,
-  });
+}) => {
+  const { data: messages, isLoading, refetch } = api.post.getAll.useQuery({ groupId }, { initialData });
 
-  const { mutate } = useMutation({
-    mutationFn: (message: string) => createMessage(message, groupId),
+  const { mutate: sendMessage } = api.post.create.useMutation({
     onSuccess: () => refetch(),
   });
 
-  return { data, isLoading, createPost: mutate };
+  return { messages, isLoading, sendMessage };
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { type MessagesType } from '../_actions';
-import { usePosts } from '../_queries';
+import { useMessages } from '../_queries';
 
 import MessageBubble from './message-bubble';
 
@@ -11,16 +11,16 @@ type Props = {
   userId: string;
 };
 
-const MessagesArea = ({ initialData, groupId, userId }: Props) => {
-  const { data, isLoading } = usePosts({ groupId, initialData });
+const MessagesArea = ({ groupId, userId, initialData }: Props) => {
+  const { messages, isLoading } = useMessages({ groupId, initialData });
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p>Loading messages...</p>;
   }
 
   return (
-    <div className="flex flex-col flex-1 p-4 overflow-y-auto">
-      {data?.map(({ id, name: message, createdBy }) => (
+    <div className="flex flex-col p-4 h-0">
+      {messages?.map(({ id, name: message, createdBy }) => (
         <MessageBubble key={id} message={message} isSender={createdBy.id === userId} />
       ))}
     </div>

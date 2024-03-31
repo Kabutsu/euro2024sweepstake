@@ -11,12 +11,12 @@ export default async function Layout({ children, params: { group: id } }: { chil
   const group = await api.group.getById({ id });
   
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
+    <div className="flex h-dvh flex-col items-center justify-center">
       <Suspense fallback={<GroupName name="Loading..." />}>
         <GroupName name={group?.name} />
       </Suspense>
-      <div className="flex flex-1 w-full">
-        <Suspense fallback={<div>Loading...</div>}>
+      <div className="flex flex-col w-full h-dvh">
+        <Suspense fallback={<div>Loading base layout...</div>}>
           {children}
         </Suspense>
       </div>
