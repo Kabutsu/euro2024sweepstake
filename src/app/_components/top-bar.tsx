@@ -12,7 +12,7 @@ export default function TopBar({ children = undefined, title, hideOnDesktop = fa
     <div className={`flex ${hideOnDesktop ? "sm:hidden" : ""} flex-row items-center justify-between w-full h-20 sm:h-16 p-4 pr-8 shadow-md`}>
       <div className="flex flex-row items-center gap-4">
         <SidebarMenu />
-        <h1 className="font-semibold text-xl sm:text-base truncate w-48 sm:w-96 md:min-w-max h-6">
+        <h1 className="font-semibold text-lg truncate w-48 sm:w-96 md:min-w-max h-7">
           {title}
         </h1>
       </div>
