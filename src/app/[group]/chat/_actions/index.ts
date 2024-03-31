@@ -9,3 +9,10 @@ export type MessagesType = NonNullable<
 export async function getMessages(groupId: string): Promise<MessagesType> {
   return await api.post.getAll({ groupId });
 };
+
+export async function createMessage(
+  name: string,
+  postedIn: string
+): Promise<void> {
+  await api.post.create({ name, postedIn });
+};
