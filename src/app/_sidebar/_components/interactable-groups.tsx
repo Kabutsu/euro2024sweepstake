@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { GroupsType } from '../_actions';
+import { type GroupsType } from '../_actions';
 
 import { useGroups } from '../_queries';
 
