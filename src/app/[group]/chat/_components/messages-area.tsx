@@ -1,5 +1,6 @@
 'use client';
 
+import LoadingSpinner from '~/app/_components/loading-spinner';
 import { type MessagesType } from '../_actions';
 import { useMessages } from '../_queries';
 
@@ -15,7 +16,7 @@ const MessagesArea = ({ groupId, userId, initialData }: Props) => {
   const { messages, isLoading } = useMessages({ groupId, initialData });
 
   if (isLoading) {
-    return <p>Loading messages...</p>;
+    return <LoadingSpinner />;
   }
 
   return (

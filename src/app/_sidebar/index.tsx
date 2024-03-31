@@ -1,5 +1,6 @@
-import { api } from "~/trpc/server";
 import { getServerAuthSession } from '~/server/auth';
+
+import { getGroups } from './_actions';
 
 import Layout from './layout';
 
@@ -12,7 +13,7 @@ export default async function Sidebar() {
     return null;
   }
 
-  const allGroups = await api.group.getAll();
+  const allGroups = await getGroups();
 
   return (
     <Layout>

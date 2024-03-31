@@ -2,6 +2,8 @@
 
 import { useSidebar } from '~/zustand';
 
+import Scroller from './_components/scroller';
+
 type Props = {
   children: React.ReactNode;
 };

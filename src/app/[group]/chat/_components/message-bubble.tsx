@@ -10,7 +10,7 @@ const MessageBubble = ({ message, isSender }: Props) => {
         isSender ? "bg-blue-500 text-white ml-auto" : "bg-gray-200 text-gray-800"
       }`}
     >
-      <p className="text-pretty truncate">
+      <p className="text-wrap truncate">
         {message}
       </p>
     </div>

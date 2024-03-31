@@ -1,42 +1,22 @@
 import { Suspense } from 'react';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import SkeletonBar from '~/app/_components/skeleton-bar';
+import TopBar from '~/app/_components/top-bar';
 
-import { api } from '~/trpc/server';
+import Header from './_components/header';
+import LoadingSpinner from '../_components/loading-spinner';
 
-import TopBar from '../_components/top-bar';
-
-export default async function Layout({ children, params: { group: id } }: { children: React.ReactNode, params: { group: string } }) {
-  const group = await api.group.getById({ id });
-  
+export default function Layout({ children, params: { group: groupId } }: { children: React.ReactNode, params: { group: string } }) {
   return (
     <div className="flex h-dvh flex-col items-center justify-center">
-      <Suspense fallback={<GroupName name="Loading..." />}>
-        <GroupName name={group?.name} />
+      <Suspense fallback={<TopBar title={<SkeletonBar />} />}>
+        <Header groupId={groupId} />
       </Suspense>
       <div className="flex flex-col w-full h-dvh">
-        <Suspense fallback={<div>Loading base layout...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           {children}
         </Suspense>
       </div>
     </div>
-  );
-};
-
-const GroupName = ({ name }: { name: string | undefined }) => {
-  return (
-    <TopBar title={name}>
-      <nav className="flex flex-row gap-6 font-light text-base">
-        <Link href="chat" className="sm:min-w-16 text-center">
-          <Image src="/images/comments-solid.svg" alt="draw" width={0} height={0} className="sm:hidden h-8 w-8 px-1" />
-          <p className="hidden sm:inline">Chat</p>
-        </Link>
-        <Link href="draw" className="sm:min-w-16 text-center">
-          <Image src="/images/circle-info-solid.svg" alt="draw" width={0} height={0} className="sm:hidden h-8 w-8 px-1" />
-          <p className="hidden sm:inline">Draw</p>
-        </Link>
-      </nav>
-    </TopBar>
   );
 };

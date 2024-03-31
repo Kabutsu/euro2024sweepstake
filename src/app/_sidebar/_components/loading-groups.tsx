@@ -1,7 +1,9 @@
+import LoadingItem from './loading-item';
+
 const LoadingGroups = () => {
-  return (
-    <p>Loading...</p>
-  );
+  return Array.from({ length: 5 }).map((_, i) => (
+    <LoadingItem key={i} />
+  ));
 };
 
 export default LoadingGroups;

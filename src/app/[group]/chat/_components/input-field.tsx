@@ -26,7 +26,7 @@ const InputField = ({ groupId }: Props) => {
         placeholder={isLoading ? message : 'Type a message'}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="w-full h-10 p-2 pl-4 border-0 bg-gray-100 rounded-full"
+        className="w-full h-10 p-2 pl-4 bg-gray-100 rounded-full border-0 focus:outline-none focus:ring focus:ring-blue-500"
         disabled={isLoading}
       />
     </form>

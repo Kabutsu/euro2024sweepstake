@@ -13,10 +13,10 @@ export const groupRouter = createTRPCRouter({
   }),
 
   search: protectedProcedure
-    .input(z.object({ query: z.string().optional() }))
+    .input(z.object({ searchTerm: z.string().optional() }))
     .query(({ ctx, input }) => {
       return ctx.db.group.findMany({
-        where: { name: { contains: input.query ?? '', mode: 'insensitive' } },
+        where: { name: { contains: input.searchTerm ?? '', mode: 'insensitive' } },
         include: { posts: { take: 1, orderBy: { createdAt: "desc" }, } },
       });
     }),

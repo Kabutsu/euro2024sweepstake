@@ -1,19 +1,22 @@
 'use client';
 
-type Props = {
-  onChange: (e: string) => void;
-}
+import { useState } from 'react';
 
-const SearchBar = ({ onChange }: Props) => {
+import { useGroups } from '../_queries';
+
+const SearchBar = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  useGroups({ searchTerm });
+
   return (
-    <div className="flex items-center justify-center">
-      <input
-        type="text"
-        placeholder="Search groups"
-        className="w-full h-10 p-2 pl-4 border-0 bg-gray-100 rounded-full"
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </div>
+    <input
+      type="text"
+      placeholder="Search groups"
+      className="w-full h-full p-2 pl-4 border-0 text-gray-800 bg-gray-100 rounded-full"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
   );
 };
 

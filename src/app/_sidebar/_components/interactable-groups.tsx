@@ -1,50 +1,47 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 
-import { type api } from '~/trpc/server';
+import { GroupsType } from '../_actions';
 
-import { searchGroups } from '../_actions';
+import { useGroups } from '../_queries';
 
-import SearchBar from './searchbar';
-import Scroller from './scroller';
 import NavItem from './nav-item';
 import LoadingGroups from './loading-groups';
-
-type GroupsType = NonNullable<
-  Awaited<ReturnType<typeof api.group.getAll>>
->;
+import Scroller from './scroller';
+import SearchArea from './search-area';
 
 type Props = {
   initialData: GroupsType;
 };
 
 const InteractableGroups = ({ initialData }: Props) => {
-  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['groups', search.toLowerCase()],
-    queryFn: () => searchGroups(search),
-    initialData,
-  });
+  const { data, isLoading } = useGroups({ searchTerm, initialData });
 
   return (
     <>
-      <div className="pb-3 px-4">
-        <SearchBar onChange={setSearch} />
-      </div>
-      {isLoading || isFetching ? (
-        <LoadingGroups />
-      ) : (
-        <Scroller>
-          {data.map((group) => (
+      <SearchArea>
+        <input
+          type="text"
+          placeholder="Search groups"
+          className="w-full h-full p-2 pl-4 text-gray-700  bg-gray-100 border-0 rounded-full focus:outline-none focus:ring focus:ring-blue-500"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </SearchArea>
+
+      <Scroller>
+        {isLoading ? (
+          <LoadingGroups />
+        ) : (
+          data?.map((group) => (
             <NavItem key={group.id} group={group} />
-          ))}
-        </Scroller>
-      )}
-    </>
-  );
+          ))
+        )}
+      </Scroller>
+    </>);
 };
 
 export default InteractableGroups;
