@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 import Sidebar from './_sidebar';
 import SidebarSkeleton from './_sidebar/skeleton';
+import LoadingSpinner from './_components/loading-spinner';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,7 +34,9 @@ export default function RootLayout({
               <Sidebar />
             </Suspense>
             <div className="flex-1">
-              {children}
+              <Suspense fallback={<LoadingSpinner />}>
+                {children}
+              </Suspense>
             </div>
           </main>
         </TRPCReactProvider>
