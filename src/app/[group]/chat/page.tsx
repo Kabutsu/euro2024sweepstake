@@ -10,7 +10,7 @@ export default async function Page({ params: { group: groupId } }: { params: { g
 
   return (
     <div className="flex-1 overflow-y-scroll">
-      <MessagesArea initialData={posts} groupId={groupId} userId={session?.user.id!} />
+      <MessagesArea initialData={posts} groupId={groupId} userId={session?.user.id ?? ''} />
     </div>
   );
 };
