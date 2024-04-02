@@ -10,7 +10,7 @@ export const postRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1), postedIn: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      var post = ctx.db.post.create({
+      const post = ctx.db.post.create({
         data: {
           name: input.name,
           createdBy: { connect: { id: ctx.session.user.id } },
@@ -20,7 +20,7 @@ export const postRouter = createTRPCRouter({
 
       const { id, name: text, createdById } = await post;
 
-      pusherServer.trigger(
+      void pusherServer.trigger(
         `group-${input.postedIn}`,
         messageTypes.NEW_MESSAGE,
         { id, text, createdById },

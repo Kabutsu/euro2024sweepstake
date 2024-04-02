@@ -25,13 +25,13 @@ const MessagesArea = ({ groupId, userId, initialData }: Props) => {
   useEffect(() => {
     pusherClient.subscribe(`group-${groupId}`).bind(messageTypes.NEW_MESSAGE, (data: Record<string, string | number>) => {
       addPreHeader(groupId, data.text as string);
-      refresh();
+      void refresh();
     });
 
     return () => {
       pusherClient.unsubscribe(`group-${groupId}`);
     };
-  }, []);
+  }, [addPreHeader, groupId, refresh]);
 
   if (isLoading) {
     return <LoadingSpinner />;
