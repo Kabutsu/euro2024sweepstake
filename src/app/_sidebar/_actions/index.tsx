@@ -1,6 +1,6 @@
 'use server';
 
-import { api } from "~/trpc/server";
+import { api } from "~/lib/trpc/server";
 
 export type GroupsType = NonNullable<
   Awaited<ReturnType<typeof api.group.getAll>>

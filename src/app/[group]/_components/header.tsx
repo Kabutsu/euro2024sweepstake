@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { api } from '~/trpc/server';
+import { api } from '~/lib/trpc/server';
 
 import TopBar from '~/app/_components/top-bar';
 

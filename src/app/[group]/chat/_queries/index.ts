@@ -2,7 +2,7 @@
 
 import { type MessagesType } from '../_actions';
 
-import { api } from '~/trpc/react';
+import { api } from '~/lib/trpc/react';
 
 export const useMessages = ({
   groupId,
@@ -13,9 +13,7 @@ export const useMessages = ({
 }) => {
   const { data: messages, isLoading, refetch } = api.post.getAll.useQuery({ groupId }, { initialData });
 
-  const { mutate: sendMessage } = api.post.create.useMutation({
-    onSuccess: () => refetch(),
-  });
+  const { mutate: sendMessage } = api.post.create.useMutation();
 
-  return { messages, isLoading, sendMessage };
+  return { messages, isLoading, sendMessage, refresh: refetch };
 };

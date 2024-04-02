@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { messageTypes, pusherServer } from "~/lib/pusher";
 
 import {
   createTRPCRouter,
@@ -9,16 +10,23 @@ export const postRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1), postedIn: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      return ctx.db.post.create({
+      var post = ctx.db.post.create({
         data: {
           name: input.name,
           createdBy: { connect: { id: ctx.session.user.id } },
           postedIn: { connect: { id: input.postedIn } },
         },
       });
+
+      const { id, name: text, createdById } = await post;
+
+      pusherServer.trigger(
+        `group-${input.postedIn}`,
+        messageTypes.NEW_MESSAGE,
+        { id, text, createdById },
+      );
+
+      return post;
     }),
 
   getAll: protectedProcedure

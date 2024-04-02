@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { type api } from '~/trpc/server';
+import { type api } from '~/lib/trpc/server';
 
-import { useSidebar } from '~/zustand';
+import { useSidebar, useLatestMessages } from '~/lib/zustand';
 
 type GroupType = NonNullable<
   Awaited<ReturnType<typeof api.group.getAll>>
@@ -18,13 +18,15 @@ const NavItem = ({ group }: { group: GroupType }) => {
   const groupId = new RegExp(`/${group.id}/`);
   const isActive = groupId.test(pathname);
 
+  const { preHeaders } = useLatestMessages();
+
   return (
     <Link href={`/${group.id}/chat`} className={`flex flex-col items-left justify-between w-full p-3 rounded-md ${isActive ? "bg-gray-200" : "hover:bg-gray-100"}`} onClick={toggle}>
       <p className="font-semibold text-base truncate">
         {group.name}
       </p>
       <p className="font-light text-sm truncate">
-        {group.posts.at(0)?.name ?? "No messages yet"}
+        {preHeaders[group.id] ?? group.posts.at(0)?.name ?? "No messages yet"}
       </p>
     </Link>
   );

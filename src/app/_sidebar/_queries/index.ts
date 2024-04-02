@@ -4,7 +4,7 @@ import {
   type GroupsType,
 } from "../_actions";
 
-import { api } from "~/trpc/react";
+import { api } from "~/lib/trpc/react";
 
 export const useGroups = ({
   searchTerm = "",

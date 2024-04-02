@@ -1,6 +1,6 @@
 'use client';
 
-import { useSidebar } from '~/zustand';
+import { useSidebar } from '~/lib/zustand';
 
 type Props = {
   children: React.ReactNode;
