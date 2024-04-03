@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { messageTypes, pusherServer } from "~/lib/pusher";
+
+import { pusherServer } from "~/lib/pusher/server";
+import { messageTypes } from "~/lib/pusher/shared";
 
 import {
   createTRPCRouter,
@@ -10,6 +12,7 @@ export const postRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1), postedIn: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
+      console.log("Creating post", input);
       const post = ctx.db.post.create({
         data: {
           name: input.name,
@@ -18,14 +21,20 @@ export const postRouter = createTRPCRouter({
         },
       });
 
+      console.log('Created post, awaiting');
+
       const { id, name: text, createdById } = await post;
 
-      void pusherServer.trigger(
+      console.log('Awaited post, triggering pusher event');
+
+      pusherServer.trigger(
         `group-${input.postedIn}`,
         messageTypes.NEW_MESSAGE,
         { id, text, createdById },
-      );
+      ).then(() => console.log('Pusher event triggered'))
+      .catch(console.error);
 
+      console.log('Pusher event triggered, returning post', post);
       return post;
     }),
 

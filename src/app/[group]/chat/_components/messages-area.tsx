@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 
-import { messageTypes, pusherClient } from '~/lib/pusher';
+import { pusherClient } from '~/lib/pusher/react';
+import { messageTypes } from '~/lib/pusher/shared';
 import { useLatestMessages } from '~/lib/zustand';
 
 import LoadingSpinner from '~/app/_components/loading-spinner';
@@ -23,12 +24,15 @@ const MessagesArea = ({ groupId, userId, initialData }: Props) => {
   const { addPreHeader } = useLatestMessages();
 
   useEffect(() => {
+    console.log('Subscribing to group', groupId);
     pusherClient.subscribe(`group-${groupId}`).bind(messageTypes.NEW_MESSAGE, (data: Record<string, string | number>) => {
+      console.log('Received new message', data);
       addPreHeader(groupId, data.text as string);
-      void refresh();
+      refresh().catch(console.error);
     });
 
     return () => {
+      console.log('Unsubscribing from group', groupId);
       pusherClient.unsubscribe(`group-${groupId}`);
     };
   }, [addPreHeader, groupId, refresh]);
