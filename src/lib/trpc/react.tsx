@@ -6,6 +6,9 @@ import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
 import SuperJSON from "superjson";
 
+import * as Ably from 'ably';
+import { AblyProvider } from 'ably/react';
+
 import { type AppRouter } from "~/server/api/root";
 
 const createQueryClient = () => new QueryClient();
@@ -24,6 +27,7 @@ export const api = createTRPCReact<AppRouter>();
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
+  const ablyClient = new Ably.Realtime({ authUrl: '/api/ably' });
 
   const [trpcClient] = useState(() =>
     api.createClient({
@@ -49,7 +53,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <api.Provider client={trpcClient} queryClient={queryClient}>
-        {props.children}
+        <AblyProvider client={ablyClient}>
+          {props.children}
+        </AblyProvider>
       </api.Provider>
     </QueryClientProvider>
   );

@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useChannel } from 'ably/react';
 
-import { pusherClient } from '~/lib/pusher/react';
-import { messageTypes } from '~/lib/pusher/shared';
+import { messageTypes } from '~/lib/ably/shared';
 import { useLatestMessages } from '~/lib/zustand';
 
 import LoadingSpinner from '~/app/_components/loading-spinner';
@@ -23,19 +22,13 @@ const MessagesArea = ({ groupId, userId, initialData }: Props) => {
   const { messages, isLoading, refresh } = useMessages({ groupId, initialData });
   const { addPreHeader } = useLatestMessages();
 
-  useEffect(() => {
-    console.log('Subscribing to group', groupId);
-    pusherClient.subscribe(`group-${groupId}`).bind(messageTypes.NEW_MESSAGE, (data: Record<string, string | number>) => {
-      console.log('Received new message', data);
-      addPreHeader(groupId, data.text as string);
-      refresh().catch(console.error);
-    });
-
-    return () => {
-      console.log('Unsubscribing from group', groupId);
-      pusherClient.unsubscribe(`group-${groupId}`);
-    };
-  }, [addPreHeader, groupId, refresh]);
+  useChannel(groupId, (message) => {
+    if (message.name === messageTypes.NEW_MESSAGE) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      addPreHeader(groupId, message.data.name); // eslint-disable-line @typescript-eslint/no-unsafe-member-access
+      void refresh();
+    }
+  });
 
   if (isLoading) {
     return <LoadingSpinner />;
