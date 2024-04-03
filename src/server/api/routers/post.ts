@@ -27,7 +27,7 @@ export const postRouter = createTRPCRouter({
 
       console.log('Awaited post, triggering pusher event');
 
-      pusherServer.trigger(
+      pusherServer().trigger(
         `group-${input.postedIn}`,
         messageTypes.NEW_MESSAGE,
         { id, text, createdById },
