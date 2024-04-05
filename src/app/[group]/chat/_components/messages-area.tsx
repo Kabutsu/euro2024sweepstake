@@ -19,14 +19,13 @@ type Props = {
 };
 
 const MessagesArea = ({ groupId, userId, initialData }: Props) => {
-  const { messages, isLoading, refresh } = useMessages({ groupId, initialData });
+  const { sendingMessages, isLoading } = useMessages({ groupId, initialData });
   const { addPreHeader } = useLatestMessages();
 
   useChannel(groupId, (message) => {
     if (message.name === messageTypes.NEW_MESSAGE) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      addPreHeader(groupId, message.data.name); // eslint-disable-line @typescript-eslint/no-unsafe-member-access
-      void refresh();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      addPreHeader(groupId, message.data.name);
     }
   });
 
@@ -34,8 +33,8 @@ const MessagesArea = ({ groupId, userId, initialData }: Props) => {
     return <LoadingSpinner />;
   }
 
-  return messages?.map(({ id, name: message, createdBy }) => (
-    <MessageBubble key={id} message={message} isSender={createdBy.id === userId} />
+  return sendingMessages?.map(({ id, name: message, createdBy, isSending }) => (
+    <MessageBubble key={id} message={message ?? ''} isSender={createdBy?.id === userId} isSending={isSending} />
   ));
 };
 
