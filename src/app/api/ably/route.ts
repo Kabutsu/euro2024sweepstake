@@ -7,7 +7,7 @@ const handler = async (_: Request) => {
 
   const clientId = referer ? new URL(referer).hostname : 'localhost';
 
-  const client = new Ably.Realtime({
+  const client = new Ably.Rest({
     key: process.env.ABLY_API_KEY,
     clientId,
   });

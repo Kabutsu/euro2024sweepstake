@@ -29,7 +29,16 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   
   const prefix = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-  const ablyClient = new Ably.Realtime({ authUrl: `${prefix}/api/ably` });
+  const ablyClient = new Ably.Realtime({
+    authUrl: `${prefix}/api/ably`,
+    recover: (lastConnectionDetails, shouldRecover) => {
+      if (lastConnectionDetails.location === document.location.href) {
+        shouldRecover(true);
+      } else {
+        shouldRecover(false);
+      }
+    }
+  });
 
   const [trpcClient] = useState(() =>
     api.createClient({
