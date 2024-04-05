@@ -1,9 +1,6 @@
 'use client';
 
 import { useChannel } from 'ably/react';
-import {
-  type MessagesType,
-} from '../_actions';
 
 import { api } from '~/lib/trpc/react';
 import { messageTypes } from '~/lib/ably/shared';
@@ -22,6 +19,8 @@ const DEFAULT_PENDING_MSG = {
   },
 };
 
+const PAGE_SIZE = 25;
+
 export const useInfiniteMessages = ({
   groupId,
 }: {
@@ -33,7 +32,7 @@ export const useInfiniteMessages = ({
 
   const { data: messages, isLoading, refetch: refresh, fetchNextPage, hasNextPage, isFetchingNextPage } = api.post.getLatest.useInfiniteQuery({
     groupId,
-    limit: 25,
+    limit: PAGE_SIZE,
   }, {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
@@ -41,26 +40,32 @@ export const useInfiniteMessages = ({
   const { mutate: sendMessage } = api.post.create.useMutation({
     onMutate: async (message) => {
       await utils.post.getLatest.cancel();
+      
+      const prevData = utils.post.getLatest.getInfiniteData();
 
-      const prevData = utils.post.getLatest.getData();
-
-      utils.post.getLatest.setData({ groupId }, (old) => ({
-        nextCursor: old?.nextCursor,
-        items: [
+      utils.post.getLatest.setInfiniteData({ groupId, limit: PAGE_SIZE, cursor: prevData?.pages.at(0)?.nextCursor }, (old) => ({
+        pageParams: old?.pageParams ?? [],
+        pages: [
           {
-            groupId,
-            ...DEFAULT_PENDING_MSG,
-            ...message,
-            id: Date.now(),
+            nextCursor: old?.pages.at(0)?.nextCursor ?? undefined,
+            items: [
+              {
+                groupId,
+                ...DEFAULT_PENDING_MSG,
+                ...message,
+                id: Date.now(),
+              },
+              ...(old?.pages.at(0)?.items ?? [])
+            ]
           },
-          ...(old?.items ?? []),
+          ...(old?.pages.slice(1) ?? [])
         ]
       }));
 
       return { prevData };
     },
     onError: (_, __, ctx) => {
-      utils.post.getAll.setData({ groupId }, ctx?.prevData?.items ?? []);
+      utils.post.getLatest.setInfiniteData({ groupId }, ctx?.prevData);
     },
     onSuccess: (message) => {
       if (message) {
@@ -74,52 +79,4 @@ export const useInfiniteMessages = ({
   });
 
   return { messages, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, sendMessage, refresh };
-};
-
-export const useMessages = ({
-  groupId,
-  initialData = undefined,
-}: {
-  groupId: string;
-  initialData?: MessagesType;
-}) => {
-  const utils = api.useUtils();
-  const { channel } = useChannel(groupId);
-  const { addPreHeader } = useLatestMessages();
-
-  const { data: messages, isLoading, refetch: refresh } = api.post.getAll.useQuery({ groupId }, { initialData });
-
-  const { mutate: sendMessage } = api.post.create.useMutation({
-    onMutate: async (message) => {
-      await utils.post.getAll.cancel();
-
-      const prevData = utils.post.getAll.getData();
-
-      utils.post.getAll.setData({ groupId }, (old) => [
-        {
-          groupId,
-          ...DEFAULT_PENDING_MSG,
-          ...message,
-          id: Date.now(),
-        },
-        ...(old ?? [])
-      ] as MessagesType);
-
-      return { prevData };
-    },
-    onError: (_, __, ctx) => {
-      utils.post.getAll.setData({ groupId }, ctx?.prevData);
-    },
-    onSuccess: (message) => {
-      if (message) {
-        addPreHeader(groupId, message.name);
-        void channel.publish({
-          name: messageTypes.NEW_MESSAGE,
-          data: message,
-        })
-      }
-    },
-  });
-
-  return { messages, isLoading, sendMessage, refresh };
 };

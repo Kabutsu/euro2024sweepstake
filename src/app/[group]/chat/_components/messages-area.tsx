@@ -10,7 +10,7 @@ import { type MessagesType } from '../_actions';
 import { useInfiniteMessages } from '../_queries';
 
 import MessageBubble from './message-bubble';
-import { Fragment, useEffect } from 'react';
+import { Fragment } from 'react';
 
 type Props = {
   initialData: MessagesType;
@@ -20,10 +20,6 @@ type Props = {
 
 const MessagesArea = ({ groupId, userId }: Props) => {
   const { messages, isLoading, hasNextPage, refresh } = useInfiniteMessages({ groupId });
-
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
 
   useChannel(groupId, (message) => {
     if (message.name === messageTypes.NEW_MESSAGE) {
