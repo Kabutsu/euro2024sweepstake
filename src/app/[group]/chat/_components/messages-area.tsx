@@ -1,5 +1,6 @@
 'use client';
 
+import { Fragment, useCallback } from 'react';
 import { useChannel } from 'ably/react';
 
 import { messageTypes } from '~/lib/ably/shared';
@@ -10,7 +11,6 @@ import { type MessagesType } from '../_actions';
 import { useInfiniteMessages } from '../_queries';
 
 import MessageBubble from './message-bubble';
-import { Fragment } from 'react';
 
 type Props = {
   initialData: MessagesType;
@@ -19,7 +19,30 @@ type Props = {
 };
 
 const MessagesArea = ({ groupId, userId }: Props) => {
-  const { messages, isLoading, hasNextPage, refresh } = useInfiniteMessages({ groupId });
+  const { messages, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, refresh } = useInfiniteMessages({ groupId });
+
+  const loaderRef = useCallback((node: HTMLDivElement) => {
+    if (!node) {
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        void fetchNextPage();
+      }
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0,
+    });
+
+    observer.observe(node);
+
+    return () => {
+      observer.unobserve(node);
+      observer.disconnect();
+    };
+  }, [fetchNextPage]);
 
   useChannel(groupId, (message) => {
     if (message.name === messageTypes.NEW_MESSAGE) {
@@ -45,7 +68,11 @@ const MessagesArea = ({ groupId, userId }: Props) => {
           ))}
         </Fragment>
       ))}
-      {hasNextPage && <LoadingSpinner />}
+      {(hasNextPage || isFetchingNextPage) && (
+        <div ref={loaderRef} className="flex items-center justify-center w-full h-20">
+          <LoadingSpinner />
+        </div>
+      )}
     </>
   );
 };
