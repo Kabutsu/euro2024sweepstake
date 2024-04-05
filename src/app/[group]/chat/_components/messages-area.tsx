@@ -3,7 +3,6 @@
 import { useChannel } from 'ably/react';
 
 import { messageTypes } from '~/lib/ably/shared';
-import { useLatestMessages } from '~/lib/zustand';
 
 import LoadingSpinner from '~/app/_components/loading-spinner';
 
@@ -20,12 +19,9 @@ type Props = {
 
 const MessagesArea = ({ groupId, userId, initialData }: Props) => {
   const { messages, isLoading, refresh } = useMessages({ groupId, initialData });
-  const { addPreHeader } = useLatestMessages();
 
   useChannel(groupId, (message) => {
     if (message.name === messageTypes.NEW_MESSAGE) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      addPreHeader(groupId, message.data.name);
       void refresh();
     }
   });

@@ -5,6 +5,7 @@ import { type MessagesType } from '../_actions';
 
 import { api } from '~/lib/trpc/react';
 import { messageTypes } from '~/lib/ably/shared';
+import { useLatestMessages } from '~/lib/zustand';
 
 const DEFAULT_PENDING_MSG = {
   createdAt: new Date(),
@@ -28,6 +29,7 @@ export const useMessages = ({
 }) => {
   const utils = api.useUtils();
   const { channel } = useChannel(groupId);
+  const { addPreHeader } = useLatestMessages();
 
   const { data: messages, isLoading, refetch: refresh } = api.post.getAll.useQuery({ groupId }, { initialData });
 
@@ -52,10 +54,15 @@ export const useMessages = ({
     onError: (_, __, ctx) => {
       utils.post.getAll.setData({ groupId }, ctx?.prevData);
     },
-    onSuccess: (message) => channel.publish({
-      name: messageTypes.NEW_MESSAGE,
-      data: message,
-    }),
+    onSettled: (message) => {
+      if (message) {
+        addPreHeader(groupId, message.name);
+        void channel.publish({
+          name: messageTypes.NEW_MESSAGE,
+          data: message,
+        })
+      }
+    },
   });
 
   return { messages, isLoading, sendMessage, refresh };
