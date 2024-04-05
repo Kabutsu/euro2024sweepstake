@@ -2,14 +2,14 @@
 
 import { useCallback, useState } from 'react';
 
-import { useMessages } from '../_queries';
+import { useInfiniteMessages } from '../_queries';
 
 type Props = {
   groupId: string;
 };
 
 const InputField = ({ groupId }: Props) => {
-  const { isLoading, sendMessage } = useMessages({ groupId });
+  const { isLoading, sendMessage } = useInfiniteMessages({ groupId });
   const [message, setMessage] = useState('');
 
   const handleSubmit = useCallback(() => {

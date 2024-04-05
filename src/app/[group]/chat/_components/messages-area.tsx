@@ -7,9 +7,10 @@ import { messageTypes } from '~/lib/ably/shared';
 import LoadingSpinner from '~/app/_components/loading-spinner';
 
 import { type MessagesType } from '../_actions';
-import { useMessages } from '../_queries';
+import { useInfiniteMessages } from '../_queries';
 
 import MessageBubble from './message-bubble';
+import { Fragment, useEffect } from 'react';
 
 type Props = {
   initialData: MessagesType;
@@ -17,8 +18,12 @@ type Props = {
   userId: string;
 };
 
-const MessagesArea = ({ groupId, userId, initialData }: Props) => {
-  const { messages, isLoading, refresh } = useMessages({ groupId, initialData });
+const MessagesArea = ({ groupId, userId }: Props) => {
+  const { messages, isLoading, hasNextPage, refresh } = useInfiniteMessages({ groupId });
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   useChannel(groupId, (message) => {
     if (message.name === messageTypes.NEW_MESSAGE) {
@@ -30,14 +35,23 @@ const MessagesArea = ({ groupId, userId, initialData }: Props) => {
     return <LoadingSpinner />;
   }
 
-  return messages?.map(({ id, name: message, createdBy }) => (
-    <MessageBubble
-      key={id}
-      message={message}
-      isSender={createdBy.id === userId || createdBy.id === 'pending'}
-      isSending={createdBy.id === 'pending'}
-    />
-  ));
+  return (
+    <>
+      {messages?.pages?.map((page, i) => (
+        <Fragment key={i}>
+          {page.items?.map(({ id, name: message, createdBy }) => (
+            <MessageBubble
+              key={id}
+              message={message}
+              isSender={createdBy.id === userId || createdBy.id === 'pending'}
+              isSending={createdBy.id === 'pending'}
+            />
+          ))}
+        </Fragment>
+      ))}
+      {hasNextPage && <LoadingSpinner />}
+    </>
+  );
 };
 
 export default MessagesArea;
