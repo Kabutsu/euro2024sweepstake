@@ -27,7 +27,9 @@ export const api = createTRPCReact<AppRouter>();
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
-  const ablyClient = new Ably.Realtime({ authUrl: '/api/ably' });
+  
+  const prefix = process.env.NEXT_PUBLIC_BASE_URL ?? "";
+  const ablyClient = new Ably.Realtime({ authUrl: `${prefix}/api/ably` });
 
   const [trpcClient] = useState(() =>
     api.createClient({
