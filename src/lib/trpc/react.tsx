@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SuperJSON from "superjson";
 
 import * as Ably from 'ably';
@@ -23,22 +23,42 @@ const getQueryClient = () => {
   return (clientQueryClientSingleton ??= createQueryClient());
 };
 
+const createAblyClient = () => new Ably.Realtime({
+  authUrl: `${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/ably`,
+  recover: (lastConnectionDetails, shouldRecover) => {
+    if (lastConnectionDetails.location === document.location.href) {
+      shouldRecover(true);
+    } else {
+      shouldRecover(false);
+    }
+  }
+});
+
+let ablyClientSingleton: Ably.Realtime | undefined = undefined;
+const getAblyClient = () => {
+  if (typeof window === "undefined") {
+    // Server: always make a new Ably client
+    return createAblyClient();
+  }
+  // Browser: use singleton pattern to keep the same ably client
+  return (ablyClientSingleton ??= createAblyClient());
+};
+
 export const api = createTRPCReact<AppRouter>();
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
-  
-  const prefix = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-  const ablyClient = new Ably.Realtime({
-    authUrl: `${prefix}/api/ably`,
-    recover: (lastConnectionDetails, shouldRecover) => {
-      if (lastConnectionDetails.location === document.location.href) {
-        shouldRecover(true);
-      } else {
-        shouldRecover(false);
+  const ablyClient = getAblyClient();
+
+  useEffect(() => {
+    return () => {
+      ablyClient?.connection?.off();
+
+      if (ablyClient?.connection?.state === 'connected') {
+        ablyClient?.connection?.close();
       }
-    }
-  });
+    };
+  }, [ablyClient]);
 
   const [trpcClient] = useState(() =>
     api.createClient({

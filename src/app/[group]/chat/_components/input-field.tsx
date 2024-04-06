@@ -13,6 +13,8 @@ const InputField = ({ groupId }: Props) => {
   const [message, setMessage] = useState('');
 
   const handleSubmit = useCallback(() => {
+    if (!message.trim()) return;
+    
     sendMessage({ name: message, postedIn: groupId });
     setMessage('');
   }, [sendMessage, message, groupId]);
