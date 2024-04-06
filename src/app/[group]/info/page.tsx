@@ -13,8 +13,7 @@ export default async function Page({ params: { group: groupId } }: { params: { g
   return (
     <ChannelWrapper channelName={groupId}>
       <div className="flex flex-col flex-1 items-start p-8 overflow-y-scroll">
-        <h1>Draw</h1>
-        <p>Here you will see the sweepstake draw</p>
+        <h1 className="font-bold text-2xl">Group members</h1>
         <UsersArea users={users} />
       </div>
     </ChannelWrapper>

@@ -7,7 +7,7 @@ type Props = {
 
 const UsersArea = ({ users }: Props) => {
   return (
-    <div>
+    <div className="w-full sm:px-4 py-6">
       {users.map((user) => (
         <UserCard key={user.id} user={user} />
       ))}
