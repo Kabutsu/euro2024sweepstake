@@ -30,7 +30,7 @@ export default async function Page({ params: { group: groupId } }: { params: { g
       <p className="text-2xl md:text-4xl font-semibold text-center">
         Would you like to join?
       </p>
-      <div className="flex flex-col-reverse sm:flex-row justify-between w-[50%] sm:w-[80%] lg:w-[60%] gap-8 sm:gap-0">
+      <div className="flex flex-col-reverse sm:flex-row justify-between w-[50%] sm:w-[70%] lg:w-96 gap-8 sm:gap-0">
         <CancelButton />
         <SubmitButton groupId={groupId} userId={session?.user.id ?? ''} />
       </div>

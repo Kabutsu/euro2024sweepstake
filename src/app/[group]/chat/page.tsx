@@ -1,6 +1,6 @@
 import { checkMembershipAndRedirect } from '../_actions';
 
-import ChannelWrapper from './_components/channel-wrapper';
+import ChannelWrapper from '../_components/channel-wrapper';
 import MessagesArea from './_components/messages-area';
 import InputField from './_components/input-field';
 

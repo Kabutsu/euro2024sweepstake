@@ -1,6 +1,7 @@
 import { postRouter } from "~/server/api/routers/post";
 import { groupRouter } from "~/server/api/routers/group";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { userRouter } from "./routers/user";
 
 /**
  * This is the primary router for your server.
@@ -10,10 +11,23 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   group: groupRouter,
+  user: userRouter,
 });
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
+
+export type Posts = NonNullable<
+  Awaited<ReturnType<typeof postRouter.getAll>>
+>;
+
+export type Groups = NonNullable<
+  Awaited<ReturnType<typeof groupRouter.getAll>>
+>;
+
+export type Users = NonNullable<
+  Awaited<ReturnType<typeof userRouter.getAllUsers>>
+>;
 
 /**
  * Create a server-side caller for the tRPC API.
