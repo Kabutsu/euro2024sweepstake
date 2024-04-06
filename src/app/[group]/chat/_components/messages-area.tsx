@@ -60,6 +60,7 @@ const MessagesArea = ({ groupId, userId }: Props) => {
             <MessageBubble
               key={id}
               message={message}
+              avatar={createdBy.image}
               isSender={createdBy.id === userId || createdBy.id === 'pending'}
               isSending={createdBy.id === 'pending'}
             />
