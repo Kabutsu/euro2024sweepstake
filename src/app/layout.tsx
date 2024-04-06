@@ -8,6 +8,7 @@ import { TRPCReactProvider } from "~/lib/trpc/react";
 import Sidebar from './_sidebar';
 import SidebarSkeleton from './_sidebar/skeleton';
 import LoadingSpinner from './_components/loading-spinner';
+import Modal from './_components/modal';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({
                 {children}
               </Suspense>
             </div>
+            <Modal />
           </main>
         </TRPCReactProvider>
       </body>

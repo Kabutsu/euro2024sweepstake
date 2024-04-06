@@ -25,3 +25,17 @@ export const useLatestMessages = create<LatestMessagesState>((set) => ({
       },
     })),
 }));
+
+type ModalState = {
+  isOpen: boolean;
+  children: React.ReactNode;
+  open: (children: React.ReactNode) => void;
+  close: () => void;
+};
+
+export const useModal = create<ModalState>((set) => ({
+  isOpen: false,
+  children: null,
+  open: (children) => set({ isOpen: true, children }),
+  close: () => set({ isOpen: false }),
+}));
