@@ -1,23 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { useMessages } from '../_queries';
+import { useInfiniteMessages } from '../_queries';
 
 type Props = {
   groupId: string;
 };
 
 const InputField = ({ groupId }: Props) => {
-  const { isLoading, sendMessage } = useMessages({ groupId});
+  const { isLoading, sendMessage } = useInfiniteMessages({ groupId });
   const [message, setMessage] = useState('');
+
+  const handleSubmit = useCallback(() => {
+    if (!message.trim()) return;
+    
+    sendMessage({ name: message, postedIn: groupId });
+    setMessage('');
+  }, [sendMessage, message, groupId]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        sendMessage({ name: message, postedIn: groupId });
-        setMessage('');
+        handleSubmit();
       }}
       className="flex items-center justify-center"
     >

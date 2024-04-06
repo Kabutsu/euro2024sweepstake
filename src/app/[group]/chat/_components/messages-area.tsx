@@ -1,8 +1,14 @@
 'use client';
 
+import { Fragment, useCallback } from 'react';
+import { useChannel } from 'ably/react';
+
+import { messageTypes } from '~/lib/ably/shared';
+
 import LoadingSpinner from '~/app/_components/loading-spinner';
+
 import { type MessagesType } from '../_actions';
-import { useMessages } from '../_queries';
+import { useInfiniteMessages } from '../_queries';
 
 import MessageBubble from './message-bubble';
 
@@ -12,19 +18,62 @@ type Props = {
   userId: string;
 };
 
-const MessagesArea = ({ groupId, userId, initialData }: Props) => {
-  const { messages, isLoading } = useMessages({ groupId, initialData });
+const MessagesArea = ({ groupId, userId }: Props) => {
+  const { messages, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, refresh } = useInfiniteMessages({ groupId });
+
+  const loaderRef = useCallback((node: HTMLDivElement) => {
+    if (!node) {
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        void fetchNextPage();
+      }
+    }, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1,
+    });
+
+    observer.observe(node);
+
+    return () => {
+      observer.unobserve(node);
+      observer.disconnect();
+    };
+  }, [fetchNextPage]);
+
+  useChannel(groupId, (message) => {
+    if (message.name === messageTypes.NEW_MESSAGE) {
+      void refresh();
+    }
+  });
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   return (
-    <div className="flex flex-col p-4 h-0">
-      {messages?.map(({ id, name: message, createdBy }) => (
-        <MessageBubble key={id} message={message} isSender={createdBy.id === userId} />
+    <>
+      {messages?.pages?.map((page, i) => (
+        <Fragment key={i}>
+          {page.items?.map(({ id, name: message, createdBy }) => (
+            <MessageBubble
+              key={id}
+              message={message}
+              isSender={createdBy.id === userId || createdBy.id === 'pending'}
+              isSending={createdBy.id === 'pending'}
+            />
+          ))}
+        </Fragment>
       ))}
-    </div>
+      {(hasNextPage || isFetchingNextPage) && (
+        <div ref={loaderRef} className="flex items-center justify-center w-full h-20">
+          <LoadingSpinner />
+        </div>
+      )}
+    </>
   );
 };
 

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 
-import { useSidebar } from '~/zustand';
+import { useSidebar } from '~/lib/zustand';
 
 const SidebarMenu = () => {
   const { toggle } = useSidebar();

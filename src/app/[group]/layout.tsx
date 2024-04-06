@@ -21,7 +21,7 @@ export default async function Layout({ children, params: { group: groupId } }: {
       <Suspense fallback={<TopBar title={<SkeletonBar />} />}>
         <Header groupId={groupId} />
       </Suspense>
-      <div className="flex flex-col w-full h-dvh">
+      <div className="flex flex-1 flex-col w-full h-0">
         <Suspense fallback={<LoadingSpinner />}>
           {children}
         </Suspense>
