@@ -1,7 +1,8 @@
+import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { postRouter } from "~/server/api/routers/post";
 import { groupRouter } from "~/server/api/routers/group";
-import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { userRouter } from "./routers/user";
+import { userRouter } from "~/server/api/routers/user";
+import { drawRouter } from "~/server/api/routers/draw";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   post: postRouter,
   group: groupRouter,
   user: userRouter,
+  draw: drawRouter,
 });
 
 // export type definition of API
@@ -23,6 +25,10 @@ export type Posts = NonNullable<
 
 export type Groups = NonNullable<
   Awaited<ReturnType<typeof groupRouter.getAll>>
+>;
+
+export type Group = NonNullable<
+  Awaited<ReturnType<typeof groupRouter.getById>>
 >;
 
 export type Users = NonNullable<

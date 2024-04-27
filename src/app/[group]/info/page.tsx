@@ -14,7 +14,7 @@ export default async function Page({ params: { group: groupId } }: { params: { g
     <ChannelWrapper channelName={groupId}>
       <div className="flex flex-col flex-1 items-start p-8 overflow-y-scroll">
         <h1 className="font-bold text-2xl">Group members</h1>
-        <UsersArea users={users} />
+        <UsersArea users={users} groupId={groupId} />
       </div>
     </ChannelWrapper>
   );
