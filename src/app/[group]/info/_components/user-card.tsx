@@ -33,10 +33,10 @@ export default async function UserCard({ user, group }: Props) {
             <Image
               key={i}
               src={`/images/flags/${draw.country.name}-flag-square-icon-128.png`}
-              alt="Flag"
+              alt={draw.country.name}
               width={128}
               height={128}
-              className="rounded-full w-6 h-6 shadow-md"
+              className={`rounded-full w-6 h-6 shadow-md ${draw.country.isEliminated ? "opacity-40" : ""}`}
             />
           ))}
         </div>
@@ -46,10 +46,10 @@ export default async function UserCard({ user, group }: Props) {
           <Image
             key={i}
             src={`/images/flags/${draw.country.name}-flag-square-icon-128.png`}
-            alt="Flag"
+            alt={draw.country.name}
             width={128}
             height={128}
-            className="rounded-full w-10 h-10 shadow-md"
+            className={`rounded-full w-10 h-10 shadow-md hover:scale-110 transition-transform duration-300 ${draw.country.isEliminated ? "opacity-40" : ""}`}
           />
         ))}
       </div>
