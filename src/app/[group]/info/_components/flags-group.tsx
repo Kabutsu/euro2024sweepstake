@@ -7,7 +7,7 @@ type Props = {
   size: 'sm' | 'lg';
 };
 
-const getSize = (size: Pick<Props, 'size'>['size']) => {
+const getSize = (size: Props['size']) => {
   switch (size) {
     case 'sm':
       return 6;
