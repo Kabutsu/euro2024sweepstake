@@ -24,8 +24,8 @@ export default function FlagsGroup({ draws, size }: Props) {
       key={i}
       src={`/images/flags/${draw.country.name.toLocaleLowerCase()}-flag-square-icon-128.png`}
       alt={draw.country.name}
-      width={size === 'sm' ? 64 : 128}
-      height={size === 'sm' ? 64 : 128}
+      width={size === 'sm' ? 24 : 40}
+      height={size === 'sm' ? 24 : 40}
       className={`rounded-full w-${s} h-${s} shadow-md hover:scale-110 transition-transform duration-300 ${draw.country.isEliminated ? 'opacity-40' : ''}`}
     />
   ));
