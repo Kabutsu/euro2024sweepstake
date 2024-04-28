@@ -4,7 +4,30 @@ import {
 } from '~/server/api/root';
 import { type DrawInput } from '~/server/api/routers/draw';
 
-const shuffle = <T>(arr: Array<T>) => {
+function abbaLoop<T>(arr: Array<T>, callback: (item: T | undefined) => boolean){
+  let forward = true;
+  let index = 0;
+
+  while (!!arr.at(index) && callback(arr.at(index))) {
+    if (forward) {
+      // Going from first index to last
+      if (index === arr.length - 1) {
+        forward = false;
+      } else {
+        index++;
+      }
+    } else {
+      // Going from last index to first
+      if (index === 0) {
+        forward = true;
+      } else {
+        index--;
+      }
+    }
+  }
+}
+
+function shuffle<T>(arr: Array<T>) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j]!, arr[i]!];
@@ -27,10 +50,8 @@ export const drawTeams = (users: Users, countries: Countries, groupId: string): 
 
   const draw: DrawInput = [];
 
-  usersCopy.forEach(({ id: userId }) => {
-    const userDraw: DrawInput = [];
-
-    const drawCountry = (pot: Countries | undefined) => {
+  abbaLoop(usersCopy, (user) => {
+    function drawCountry(pot: Countries | undefined) {
       if (!pot) {
         throw new Error('Error - pot was null');
       } else if (!pot.length) {
@@ -44,15 +65,25 @@ export const drawTeams = (users: Users, countries: Countries, groupId: string): 
         throw new Error('Error - country was null');
       }
 
-      userDraw.push({ userId, groupId, countryId: country.id });
+      draw.push({ userId: user?.id ?? '', groupId, countryId: country.id });
     };
 
-    drawCountry(pot1);
-    drawCountry(pot2);
-    drawCountry(pot3);
-    drawCountry(pot4);
-
-    draw.push(...userDraw);
+    switch (true) {
+      case !!pot1?.length:
+        drawCountry(pot1);
+        return true;
+      case !!pot2?.length:
+        drawCountry(pot2);
+        return true;
+      case !!pot3?.length:
+        drawCountry(pot3);
+        return true;
+      case !!pot4?.length:
+        drawCountry(pot4);
+        return true;
+      default:
+        return false;
+    }
   });
 
   return draw;

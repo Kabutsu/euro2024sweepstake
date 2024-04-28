@@ -22,7 +22,7 @@ export default function FlagsGroup({ draws, size }: Props) {
   return draws.map((draw, i) => (
     <Image
       key={i}
-      src={`/images/flags/${draw.country.name.toLocaleLowerCase()}-flag-square-icon-128.png`}
+      src={`/images/flags/${draw.country.name.toLocaleLowerCase().replaceAll(/\s/g, '-')}-flag-square-icon-128.png`}
       alt={draw.country.name}
       width={size === 'sm' ? 24 : 40}
       height={size === 'sm' ? 24 : 40}

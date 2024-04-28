@@ -34,7 +34,7 @@ export default async function UserCard({ user, group }: Props) {
           <FlagsGroup draws={draws} size="sm" />
         </div>
       </div>
-      <div className="hidden sm:flex flex-row items-center flex-wrap flex-1 gap-4 p-4">
+      <div className="hidden sm:flex flex-row items-center flex-wrap flex-1 gap-5 p-4">
         <FlagsGroup draws={draws} size="lg" />
       </div>
     </div>
