@@ -21,6 +21,16 @@ export const drawRouter = createTRPCRouter({
       });
     }),
 
+  checkGroupDraw: protectedProcedure
+    .input(z.object({ groupId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const draw = await ctx.db.draw.findFirst({
+        where: { groupId: input.groupId },
+      });
+
+      return !!draw;
+    }),
+
   createDraw: protectedProcedure
     .input(createDrawInput)
     .mutation(async ({ ctx, input }) => {

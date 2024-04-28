@@ -1,7 +1,10 @@
+import { Suspense } from 'react';
+
 import { api } from '~/lib/trpc/server';
 import { type Users } from '~/server/api/root';
 
 import UserCard from './user-card';
+import LoadingCard from './loading-card';
 
 type Props = {
   users: Users;
@@ -13,8 +16,10 @@ export default async function UsersArea ({ users, groupId }: Props) {
 
   return (
     <div className="flex flex-col w-full sm:px-4 py-3 gap-6">
-      {users.map((user) => (
-        <UserCard key={user.id} user={user} group={group} />
+      {users.map((user, index) => (
+        <Suspense key={index} fallback={<LoadingCard />}>
+          <UserCard key={user.id} user={user} group={group} />
+        </Suspense>
       ))}
     </div>
   );
