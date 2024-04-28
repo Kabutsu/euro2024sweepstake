@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
+
+.tooltip {
+  @apply invisible opacity-0 absolute transition-opacity duration-300;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible opacity-100 z-50;
+}
+
 @tailwind utilities;

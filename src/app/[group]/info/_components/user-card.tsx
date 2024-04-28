@@ -27,10 +27,10 @@ export default async function UserCard({ user, group }: Props) {
         height={250}
         className="rounded-full w-24 h-24 p-4"
       />
-      <div className="flex flex-col flex-1 sm:flex-initial sm:w-[30%] p-4 pl-0 sm:pl-4 truncate">
+      <div className="flex flex-col flex-1 sm:flex-initial max-w-56 sm:w-[30%] sm:max-w-none p-4 pl-0 sm:pl-4 relative">
         <h2 className="text-xl font-semibold truncate">{user.name}</h2>
         <p className="hidden sm:block text-lg font-normal truncate">{user.email}</p>
-        <div className="sm:hidden flex flex-row items-center flex-wrap gap-2 pt-1">
+        <div className="sm:hidden flex flex-row items-center flex-wrap gap-x-2 gap-y-3 pt-1">
           <FlagsGroup draws={draws} size="sm" />
         </div>
       </div>
