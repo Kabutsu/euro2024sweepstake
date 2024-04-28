@@ -83,6 +83,7 @@ model Country {
     name String
     pot  Int
     seed Int
+    potSeed Int
     isEliminated Boolean @default(false)
     draws Draw[]
 }

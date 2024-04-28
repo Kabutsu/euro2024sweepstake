@@ -3,6 +3,7 @@ import { postRouter } from "~/server/api/routers/post";
 import { groupRouter } from "~/server/api/routers/group";
 import { userRouter } from "~/server/api/routers/user";
 import { drawRouter } from "~/server/api/routers/draw";
+import { countryRouter } from "~/server/api/routers/country";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   group: groupRouter,
   user: userRouter,
   draw: drawRouter,
+  country: countryRouter,
 });
 
 // export type definition of API
@@ -37,6 +39,10 @@ export type Users = NonNullable<
 
 export type Draws = NonNullable<
   Awaited<ReturnType<typeof drawRouter.getDraw>>
+>;
+
+export type Countries = NonNullable<
+  Awaited<ReturnType<typeof countryRouter.getAllCountries>>
 >;
 
 /**

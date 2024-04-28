@@ -8,6 +8,9 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
+const singleDrawInput = z.object({ userId: z.string().min(1), groupId: z.string().min(1), countryId: z.string().min(1) });
+const createDrawInput = z.array(singleDrawInput);
+
 export const drawRouter = createTRPCRouter({
   getDraw: protectedProcedure
     .input(z.object({ userId: z.string().min(1), groupId: z.string().min(1) }))
@@ -19,14 +22,16 @@ export const drawRouter = createTRPCRouter({
     }),
 
   createDraw: protectedProcedure
-    .input(z.object({ userId: z.string().min(1), groupId: z.string().min(1), countryId: z.string().min(1) }))
+    .input(createDrawInput)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.draw.create({
-        data: {
-          group: { connect: { id: input.groupId } },
-          user: { connect: { id: input.userId } },
-          country: { connect: { id: input.countryId } },
-        },
+      return ctx.db.draw.createMany({
+        data: input.map((draw) => ({
+          userId: draw.userId,
+          groupId: draw.groupId,
+          countryId: draw.countryId,
+        })),
       });
     }),
 });
+
+export type DrawInput = z.infer<typeof createDrawInput>;
