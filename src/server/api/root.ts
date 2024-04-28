@@ -35,6 +35,10 @@ export type Users = NonNullable<
   Awaited<ReturnType<typeof userRouter.getAllUsers>>
 >;
 
+export type Draws = NonNullable<
+  Awaited<ReturnType<typeof drawRouter.getDraw>>
+>;
+
 /**
  * Create a server-side caller for the tRPC API.
  * @example
