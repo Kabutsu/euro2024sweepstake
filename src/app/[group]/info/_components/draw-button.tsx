@@ -7,7 +7,9 @@ type Props = {
 };
 
 const DrawButton = ({ groupId }: Props) => {
-  const { isLoading, generate } = useGenerateDraw(groupId);
+  const { isLoading, isSuccess, generate } = useGenerateDraw(groupId);
+
+  if (isSuccess) return null;
 
   if (isLoading) return (
     <button

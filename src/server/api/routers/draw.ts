@@ -6,18 +6,20 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 
 const singleDrawInput = z.object({ userId: z.string().min(1), groupId: z.string().min(1), countryId: z.string().min(1) });
 const createDrawInput = z.array(singleDrawInput);
 
 export const drawRouter = createTRPCRouter({
-  getDraw: protectedProcedure
+  getDraw: publicProcedure
     .input(z.object({ userId: z.string().min(1), groupId: z.string().min(1) }))
     .query(({ ctx, input }) => {
       return ctx.db.draw.findMany({
         where: { userId: input.userId, groupId: input.groupId },
         include: { country: true },
+        orderBy: [ { country: { isEliminated: "asc" } }, { country: { seed: "asc" } } ],
       });
     }),
 

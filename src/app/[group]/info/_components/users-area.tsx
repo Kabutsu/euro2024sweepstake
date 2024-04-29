@@ -18,7 +18,13 @@ export default async function UsersArea ({ users, groupId }: Props) {
     <div className="flex flex-col w-full sm:px-4 py-3 gap-6">
       {users.map((user, index) => (
         <Suspense key={index} fallback={<LoadingCard />}>
-          <UserCard key={user.id} user={user} group={group} />
+          <UserCard
+            key={user.id}
+            user={user}
+            group={group}
+            index={index}
+            wait={users.length}
+          />
         </Suspense>
       ))}
     </div>
