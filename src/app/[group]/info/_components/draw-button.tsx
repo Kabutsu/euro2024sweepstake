@@ -1,6 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+import { useChannel } from 'ably/react';
+
 import { useGenerateDraw } from '../_queries';
+import { messageTypes } from '~/lib/ably/shared';
 
 type Props = {
   groupId: string;
@@ -9,7 +13,15 @@ type Props = {
 const DrawButton = ({ groupId }: Props) => {
   const { isLoading, isSuccess, generate } = useGenerateDraw(groupId);
 
-  if (isSuccess) return null;
+  const [isHidden, setIsHidden] = useState(isSuccess);
+
+  useChannel(groupId, (message) => {
+    if (message.name === messageTypes.DRAW_GENERATED) {
+      setIsHidden(true);
+    }
+  });
+
+  if (isHidden || isSuccess) return null;
 
   if (isLoading) return (
     <button
