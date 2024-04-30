@@ -23,7 +23,7 @@ export default async function UsersArea ({ users, groupId }: Props) {
             user={user}
             group={group}
             index={index}
-            wait={users.length}
+            totalUsers={users.length}
           />
         </Suspense>
       ))}

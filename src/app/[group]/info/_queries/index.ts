@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useChannel } from "ably/react";
 import { useMutation } from "@tanstack/react-query";
 
@@ -30,29 +30,47 @@ export const useGenerateDraw = (groupId: string) => {
   return { isLoading: isPending, isSuccess, generate: () => mutate() };
 };
 
-export const useDraws = ({ groupId, userId }: { groupId: string, userId: string }) => {
+export type AnimationDelay = {
+  startRevealAt: number;
+  timeBetweenReveals: number;
+};
+
+const ANIMATION_DELAY = 2000;
+
+export const useDraws = ({
+  groupId,
+  userId,
+  index,
+  totalUsers,
+}: {
+  groupId: string,
+  userId: string,
+  index: number,
+  totalUsers: number,
+}) => {
   const [data, { refetch }] = api.draw.getDraw.useSuspenseQuery(
     { groupId, userId },
     {
-      refetchOnMount: false,
+      refetchOnMount: 'always',
       refetchOnWindowFocus: false,
       refetchInterval: false,
       staleTime: Infinity,
     }
   );
-  
-  const [override, setOverride] = useState<Draws>(data);
 
-  useEffect(() => {
-    if (JSON.stringify(data) !== JSON.stringify(override)) {
+  const [override, setOverride] = useState<Draws>(data);
+  const [delay, setDelay] = useState<AnimationDelay | null>(null);
+
+  useChannel(groupId, (message) => {
+    if (message.name === messageTypes.DRAW_GENERATED) {
+      setDelay({
+        startRevealAt: (index + 1) * ANIMATION_DELAY,
+        timeBetweenReveals: totalUsers * ANIMATION_DELAY,
+      });
+      setOverride((message.data as Draws).filter((draw) => draw.userId === userId));
       void refetch();
     }
+  });
 
-    return () => {
-      setOverride(data);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, refetch]);
-
-  return { draws: override, update: setOverride };
+  return { draws: override, timeout: delay };
 };
