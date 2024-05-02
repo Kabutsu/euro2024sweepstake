@@ -4,6 +4,8 @@ import {
 } from '~/server/api/root';
 import { type DrawInput } from '~/server/api/routers/draw';
 
+const bySeed = (a: Countries[number], b: Countries[number]) => a.seed - b.seed;
+
 function abbaLoop<T>(arr: Array<T>, callback: (item: T | undefined) => boolean){
   let forward = true;
   let index = 0;
@@ -43,14 +45,48 @@ export const drawTeams = (users: Users, countries: Countries, groupId: string): 
     throw new Error('Error - countries was empty');
   }
 
-  const usersCopy = [...users];
+  const usersCopy = shuffle([...users]);
   const countriesCopy = [...countries];
 
-  const [pot1, pot2, pot3, pot4] = [1, 2, 3, 4].map((potSeed) => shuffle(countriesCopy.filter((country) => country.potSeed === potSeed)));
+  if (countriesCopy.length % usersCopy.length === 0) {
+    return factorDraw(usersCopy, countriesCopy, groupId, usersCopy.length);
+  }
+
+  return groupDraw(usersCopy, countriesCopy, groupId);  
+};
+
+const factorDraw = (users: Users, countries: Countries, groupId: string, factor: number): DrawInput => {
+  const draw: DrawInput = [];
+  
+  countries.sort(bySeed);
+
+  // split `countries` into arrays of size `factor`
+  const countryGroups: Array<Countries> = [];
+  for (let i = 0; i < countries.length; i += factor) {
+    countryGroups.push(shuffle([...countries.slice(i, i + factor)]));
+  }
+
+  for (const i of countryGroups.keys()) {
+    users.forEach((user) => {
+      const country = (countryGroups[i] ?? []).pop();
+
+      if (!country) {
+        throw new Error('Error - country was null');
+      }
+
+      draw.push({ userId: user.id, groupId, countryId: country.id });
+    });
+  }
+
+  return draw;
+};
+
+const groupDraw = (users: Users, countries: Countries, groupId: string): DrawInput => {
+  const [pot1, pot2, pot3, pot4] = [1, 2, 3, 4].map((potSeed) => shuffle(countries.filter((country) => country.potSeed === potSeed)));
 
   const draw: DrawInput = [];
 
-  abbaLoop(usersCopy, (user) => {
+  abbaLoop(users, (user) => {
     function drawCountry(pot: Countries | undefined) {
       if (!pot) {
         throw new Error('Error - pot was null');

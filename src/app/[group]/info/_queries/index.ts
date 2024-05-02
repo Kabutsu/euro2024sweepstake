@@ -18,7 +18,7 @@ const bySeedAsc = (a: FreshDraw, b: FreshDraw) => b.country!.seed - a.country!.s
 export const useGenerateDraw = (groupId: string) => {
   const channel = useChannel(groupId);
 
-  const { isPending, isSuccess, mutate } = useMutation({
+  const { isPending, isSuccess, isError, mutate } = useMutation({
     mutationKey: ['generateDraw', groupId],
     mutationFn: () => generateDraw(groupId),
     onSuccess: (draw) => channel.publish({
@@ -27,7 +27,7 @@ export const useGenerateDraw = (groupId: string) => {
     }),
   });
 
-  return { isLoading: isPending, isSuccess, generate: () => mutate() };
+  return { isLoading: isPending, isSuccess, isError, generate: () => mutate() };
 };
 
 export type AnimationDelay = {

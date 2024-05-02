@@ -11,7 +11,7 @@ type Props = {
 };
 
 const DrawButton = ({ groupId }: Props) => {
-  const { isLoading, isSuccess, generate } = useGenerateDraw(groupId);
+  const { isLoading, isSuccess, isError, generate } = useGenerateDraw(groupId);
 
   const [isHidden, setIsHidden] = useState(isSuccess);
 
@@ -20,6 +20,15 @@ const DrawButton = ({ groupId }: Props) => {
       setIsHidden(true);
     }
   });
+
+  if (isError) return (
+    <button
+      className="w-auto py-2 px-3 rounded-md shadow-md font-bold text-xl text-white hover:bg-[#1963E0] bg-[#347dfa] transition-colors duration-[250ms]"
+      onClick={generate}
+    >
+      Failed. Retry?
+    </button>
+  );
 
   if (isHidden || isSuccess) return null;
 
