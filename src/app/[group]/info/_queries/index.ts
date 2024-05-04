@@ -10,6 +10,7 @@ import { messageTypes } from "~/lib/ably/shared";
 import { type Draws } from "~/server/api/root";
 
 import { generateDraw } from "../_actions/draw-action";
+import { useModal } from "~/lib/zustand";
 
 type FreshDraw = Awaited<ReturnType<typeof generateDraw>>[number];
 
@@ -17,6 +18,7 @@ const bySeedAsc = (a: FreshDraw, b: FreshDraw) => b.country!.seed - a.country!.s
 
 export const useGenerateDraw = (groupId: string) => {
   const channel = useChannel(groupId);
+  const { close } = useModal();
 
   const { isPending, isSuccess, isError, mutate } = useMutation({
     mutationKey: ['generateDraw', groupId],
@@ -25,6 +27,7 @@ export const useGenerateDraw = (groupId: string) => {
       name: messageTypes.DRAW_GENERATED,
       data: draw.sort(bySeedAsc),
     }),
+    onSettled: () => close(),
   });
 
   return { isLoading: isPending, isSuccess, isError, generate: () => mutate() };

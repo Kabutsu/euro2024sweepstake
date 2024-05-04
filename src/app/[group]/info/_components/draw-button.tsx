@@ -5,13 +5,23 @@ import { useChannel } from 'ably/react';
 
 import { useGenerateDraw } from '../_queries';
 import { messageTypes } from '~/lib/ably/shared';
+import { useModal } from '~/lib/zustand';
+import DrawGroup from './draw-group';
 
 type Props = {
   groupId: string;
 };
 
 const DrawButton = ({ groupId }: Props) => {
-  const { isLoading, isSuccess, isError, generate } = useGenerateDraw(groupId);
+  const { generate, isLoading, isSuccess, isError } = useGenerateDraw(groupId);
+  const { open } = useModal();
+
+  const openModal = () => open(
+    <DrawGroup 
+      onSubmit={generate}
+      isLoading={isLoading}
+    />
+  );
 
   const [isHidden, setIsHidden] = useState(isSuccess);
 
@@ -24,7 +34,7 @@ const DrawButton = ({ groupId }: Props) => {
   if (isError) return (
     <button
       className="w-auto py-2 px-3 rounded-md shadow-md font-bold text-xl text-white hover:bg-[#1963E0] bg-[#347dfa] transition-colors duration-[250ms]"
-      onClick={generate}
+      onClick={openModal}
     >
       Failed. Retry?
     </button>
@@ -44,7 +54,7 @@ const DrawButton = ({ groupId }: Props) => {
   return (
     <button
       className="w-auto py-2 px-3 rounded-md shadow-md font-bold text-xl text-white hover:bg-[#1963E0] bg-[#347dfa] transition-colors duration-[250ms]"
-      onClick={generate}
+      onClick={openModal}
     >
       Run the Draw!
     </button>
