@@ -2,29 +2,34 @@
 
 import Image from 'next/image';
 
-import { type Users, type Group } from '~/server/api/root';
+import { type Users, type Draws } from '~/server/api/root';
 
-import { useDraws } from '../_queries';
+import { useUserDraws } from '../../_queries';
 
-import FlagsGroup from './flags-group';
+import FlagsGroup from '../flags/flags-group';
+import Layout from './layout';
 
 type Props = {
+  groupId: string;
   user: Users[number];
-  group: Group | null;
+  initialData: Draws;
+  refreshData: () => undefined;
   index: number;
   totalUsers: number;
 };
 
-const UserCard = ({ user, group, index, totalUsers }: Props) => {
-  const { draws, timeout } = useDraws({
-    groupId: group?.id ?? '',
+const UserCard = ({ groupId, user, initialData, refreshData, index, totalUsers }: Props) => {
+  const { draws, timeout } = useUserDraws({
+    groupId,
     userId: user.id,
+    initialData,
+    refreshData,
     index,
     totalUsers,
   });
 
   return (
-    <div className="flex flex-row rounded-lg shadow-md bg-gray-50 w-full min-[1640px]:w-[70%] sm:hover:scale-105 transition-transform duration-300">
+    <Layout interactable>
       <Image
         src={user.image ?? "/images/user-solid.svg"}
         alt={user.name ?? user.id}
@@ -46,7 +51,7 @@ const UserCard = ({ user, group, index, totalUsers }: Props) => {
       <div className="hidden sm:flex flex-row items-center flex-wrap flex-1 gap-5 p-4">
         <FlagsGroup draws={draws} size="lg" timeout={timeout} />
       </div>
-    </div>
+    </Layout>
   );
 };
 

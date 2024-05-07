@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useChannel } from 'ably/react';
 
-import { useGenerateDraw } from '../_queries';
+import { useGenerateDraw } from '../../_queries';
 import { messageTypes } from '~/lib/ably/shared';
-import { useModal } from '~/lib/zustand';
+import { useGroupUserFetching, useModal } from '~/lib/zustand';
 import DrawGroup from './draw-group';
 
 type Props = {
@@ -15,6 +15,7 @@ type Props = {
 const DrawButton = ({ groupId }: Props) => {
   const { generate, isLoading, isSuccess, isError } = useGenerateDraw(groupId);
   const { open } = useModal();
+  const { isLoading: waiting } = useGroupUserFetching();
 
   const openModal = () => open(
     <DrawGroup 
@@ -51,10 +52,13 @@ const DrawButton = ({ groupId }: Props) => {
     </button>
   );
 
+  const disabled = waiting[groupId] == null || waiting[groupId];
+
   return (
     <button
-      className="w-auto py-2 px-3 rounded-md shadow-md font-bold text-xl text-white hover:bg-[#1963E0] bg-[#347dfa] transition-colors duration-[250ms]"
+      className="w-auto py-2 px-3 rounded-md shadow-md font-bold text-xl text-white hover:enabled:bg-[#1963E0] bg-[#347dfa] disabled:opacity-40 transition-colors duration-[250ms]"
       onClick={openModal}
+      disabled={disabled}
     >
       Run the Draw!
     </button>

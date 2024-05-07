@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChannel } from "ably/react";
 import { useMutation } from "@tanstack/react-query";
 
@@ -10,7 +10,7 @@ import { messageTypes } from "~/lib/ably/shared";
 import { type Draws } from "~/server/api/root";
 
 import { generateDraw } from "../_actions/draw-action";
-import { useModal } from "~/lib/zustand";
+import { useGroupUserFetching, useModal } from "~/lib/zustand";
 
 type FreshDraw = Awaited<ReturnType<typeof generateDraw>>[number];
 
@@ -23,14 +23,34 @@ export const useGenerateDraw = (groupId: string) => {
   const { isPending, isSuccess, isError, mutate } = useMutation({
     mutationKey: ['generateDraw', groupId],
     mutationFn: () => generateDraw(groupId),
+    onMutate: () => close(),
     onSuccess: (draw) => channel.publish({
       name: messageTypes.DRAW_GENERATED,
       data: draw.sort(bySeedAsc),
     }),
-    onSettled: () => close(),
   });
 
   return { isLoading: isPending, isSuccess, isError, generate: () => mutate() };
+};
+
+export const useGroupDraws = (groupId: string) => {
+  const [data, { refetch }] = api.draw.getGroupDraw.useSuspenseQuery(
+    { groupId },
+    {
+      refetchOnMount: 'always',
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+      staleTime: Infinity,
+    }
+  );
+
+  const { setIsUserGroupFetching } = useGroupUserFetching();
+
+  useEffect(() => {
+    setIsUserGroupFetching(groupId, false);
+  }, [groupId, setIsUserGroupFetching]);
+
+  return { draws: data, refreshData: () => void refetch() };
 };
 
 export type AnimationDelay = {
@@ -40,28 +60,30 @@ export type AnimationDelay = {
 
 const ANIMATION_DELAY = 2000;
 
-export const useDraws = ({
+type UserDrawsArgs = {
+  groupId: string;
+  userId: string;
+  initialData: Draws;
+  refreshData: () => undefined;
+  index: number;
+  totalUsers: number;
+};
+
+type UserDrawsVal = {
+  draws: Draws;
+  timeout: AnimationDelay | null;
+}
+
+export const useUserDraws: (args: UserDrawsArgs) => UserDrawsVal = ({
   groupId,
   userId,
+  initialData,
+  refreshData,
   index,
   totalUsers,
-}: {
-  groupId: string,
-  userId: string,
-  index: number,
-  totalUsers: number,
-}) => {
-  const [data, { refetch }] = api.draw.getDraw.useSuspenseQuery(
-    { groupId, userId },
-    {
-      refetchOnMount: 'always',
-      refetchOnWindowFocus: false,
-      refetchInterval: false,
-      staleTime: Infinity,
-    }
-  );
+}: UserDrawsArgs) => {
+  const [override, setOverride] = useState<Draws>(initialData.filter((draw) => draw.userId === userId));
 
-  const [override, setOverride] = useState<Draws>(data);
   const [delay, setDelay] = useState<AnimationDelay | null>(null);
 
   useChannel(groupId, (message) => {
@@ -71,7 +93,7 @@ export const useDraws = ({
         timeBetweenReveals: totalUsers * ANIMATION_DELAY,
       });
       setOverride((message.data as Draws).filter((draw) => draw.userId === userId));
-      void refetch();
+      refreshData();
     }
   });
 

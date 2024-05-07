@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -13,6 +14,16 @@ const singleDrawInput = z.object({ userId: z.string().min(1), groupId: z.string(
 const createDrawInput = z.array(singleDrawInput);
 
 export const drawRouter = createTRPCRouter({
+  getGroupDraw: publicProcedure
+    .input(z.object({ groupId: z.string().min(1) }))
+    .query(({ ctx, input }) => {
+      return ctx.db.draw.findMany({
+        where: { groupId: input.groupId },
+        include: { country: true },
+        orderBy: [ { country: { isEliminated: "asc" } }, { country: { seed: "asc" } } ],
+      });
+    }),
+
   getDraw: publicProcedure
     .input(z.object({ userId: z.string().min(1), groupId: z.string().min(1) }))
     .query(({ ctx, input }) => {

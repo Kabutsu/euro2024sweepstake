@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import { type Draws } from '~/server/api/root';
 
-import { type AnimationDelay } from '../_queries';
+import { type AnimationDelay } from '../../_queries';
 
 import FlagContainer from './flag-container';
 

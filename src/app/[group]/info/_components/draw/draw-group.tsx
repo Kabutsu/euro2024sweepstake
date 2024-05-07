@@ -17,7 +17,7 @@ const DrawGroup = ({ onSubmit, isLoading }: Props) => {
       </p>
       <div className="flex flex-row justify-between mt-2">
         <CancelButton text="No, Cancel" disabled={isLoading} />
-        <SubmitButton text="Yes, Draw" disabled={isLoading} />
+        <SubmitButton text={!isLoading ? 'Yes, Draw' : 'Generating...'} disabled={isLoading} />
       </div>
     </form>
   );
