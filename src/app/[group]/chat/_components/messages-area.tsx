@@ -56,11 +56,12 @@ const MessagesArea = ({ groupId, userId }: Props) => {
     <>
       {messages?.pages?.map((page, i) => (
         <Fragment key={i}>
-          {page.items?.map(({ id, name: message, createdBy }) => (
+          {page.items?.map(({ id, name: message, createdAt, createdBy }) => (
             <MessageBubble
               key={id}
               message={message}
-              avatar={createdBy.image}
+              createdAt={createdAt}
+              sender={createdBy}
               isSender={createdBy.id === userId || createdBy.id === 'pending'}
               isSending={createdBy.id === 'pending'}
             />
