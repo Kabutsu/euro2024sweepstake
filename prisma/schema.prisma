@@ -67,6 +67,7 @@ model User {
     sessions      Session[]
     posts         Post[]
     groups        Group[]
+    draws         Draw[]
 }
 
 model Group {
@@ -74,6 +75,27 @@ model Group {
     name String
     posts Post[]
     users User[]
+    draws Draw[]
+}
+
+model Country {
+    id   String @id @default(cuid())
+    name String
+    pot  Int
+    seed Int
+    potSeed Int @default(0)
+    isEliminated Boolean @default(false)
+    draws Draw[]
+}
+
+model Draw {
+    id        String   @id @default(cuid())
+    countryId String
+    userId    String
+    groupId   String
+    country   Country  @relation(fields: [countryId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
+    group     Group    @relation(fields: [groupId], references: [id])
 }
 
 model VerificationToken {

@@ -39,4 +39,26 @@ export const groupRouter = createTRPCRouter({
         },
       });
     }),
+
+  checkUser: protectedProcedure
+    .input(z.object({ groupId: z.string().min(1), userId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.group.findFirst({
+        where: {
+          id: input.groupId,
+          users: { some: { id: input.userId } },
+        },
+      });
+    }),
+
+  join: protectedProcedure
+    .input(z.object({ groupId: z.string().min(1), userId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.group.update({
+        where: { id: input.groupId },
+        data: {
+          users: { connect: [{ id: input.userId }] },
+        },
+      });
+    }),
 });

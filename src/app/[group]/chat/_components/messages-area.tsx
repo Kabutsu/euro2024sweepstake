@@ -7,13 +7,11 @@ import { messageTypes } from '~/lib/ably/shared';
 
 import LoadingSpinner from '~/app/_components/loading-spinner';
 
-import { type MessagesType } from '../_actions';
 import { useInfiniteMessages } from '../_queries';
 
 import MessageBubble from './message-bubble';
 
 type Props = {
-  initialData: MessagesType;
   groupId: string;
   userId: string;
 };
@@ -62,6 +60,7 @@ const MessagesArea = ({ groupId, userId }: Props) => {
             <MessageBubble
               key={id}
               message={message}
+              avatar={createdBy.image}
               isSender={createdBy.id === userId || createdBy.id === 'pending'}
               isSending={createdBy.id === 'pending'}
             />

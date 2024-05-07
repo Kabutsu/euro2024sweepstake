@@ -4,8 +4,8 @@ import { useState } from 'react';
 
 import { useCreateGroup } from './_queries';
 
-import CancelButton from './_components/cancel-button';
-import SubmitButton from './_components/submit-button';
+import CancelButton from '~/app/_components/cancel-button';
+import SubmitButton from '~/app/_components/submit-button';
 
 const CreateGroup = () => {
   const [groupName, setGroupName] = useState('');
@@ -31,8 +31,8 @@ const CreateGroup = () => {
         className="w-full h-9 p-2 pl-4 bg-gray-100 rounded-full border-0 focus:outline-none focus:ring focus:ring-blue-500"
       />
       <div className="flex flex-row justify-between mt-2">
-        <CancelButton />
-        <SubmitButton disabled={isPending || !groupName.length} />
+        <CancelButton text="Cancel" />
+        <SubmitButton text="Create!" disabled={isPending || !groupName.length} />
       </div>
     </form>
   );

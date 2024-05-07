@@ -39,3 +39,19 @@ export const useModal = create<ModalState>((set) => ({
   open: (children) => set({ isOpen: true, children }),
   close: () => set({ isOpen: false }),
 }));
+
+type GroupUserFetchingState = {
+  isLoading: Record<string, boolean>;
+  setIsUserGroupFetching: (groupId: string, value: boolean) => void;
+};
+
+export const useGroupUserFetching = create<GroupUserFetchingState>((set) => ({
+  isLoading: {},
+  setIsUserGroupFetching: (groupId, value) =>
+    set((state) => ({
+      isLoading: {
+        ...state.isLoading,
+        [groupId]: value,
+      },
+    })),
+}));
