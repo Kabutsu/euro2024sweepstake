@@ -7,7 +7,7 @@ import { type Users, type Draws } from '~/server/api/root';
 import { useUserDraws } from '../../_queries';
 
 import FlagsGroup from '../flags/flags-group';
-import Layout from './layout';
+import Layout from './user-card.layout';
 
 type Props = {
   groupId: string;
@@ -29,7 +29,7 @@ const UserCard = ({ groupId, user, initialData, refreshData, index, totalUsers }
   });
 
   return (
-    <Layout interactable>
+    <Layout isInteractable>
       <Image
         src={user.image ?? "/images/user-solid.svg"}
         alt={user.name ?? user.id}

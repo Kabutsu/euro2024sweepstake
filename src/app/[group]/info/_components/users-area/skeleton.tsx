@@ -1,4 +1,4 @@
-import UsersAreaLayout from "./layout";
+import UsersAreaLayout from "./users-area.layout";
 
 import SkeletonCard from '../user-card/skeleton';
 

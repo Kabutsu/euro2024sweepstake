@@ -1,6 +1,6 @@
 import SkeletonBar from '~/app/_components/skeleton-bar';
 
-import Layout from './layout';
+import Layout from './user-card.layout';
 
 export default function LoadingCard() {
   return (
