@@ -5,6 +5,7 @@ import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { useEffect, useState } from "react";
 import SuperJSON from "superjson";
+import { SessionProvider as NextAuthProvider } from 'next-auth/react';
 
 import * as Ably from 'ably';
 import { AblyProvider } from 'ably/react';
@@ -84,9 +85,11 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <api.Provider client={trpcClient} queryClient={queryClient}>
-        <AblyProvider client={ablyClient}>
-          {props.children}
-        </AblyProvider>
+        <NextAuthProvider>
+          <AblyProvider client={ablyClient}>
+            {props.children}
+          </AblyProvider>
+        </NextAuthProvider>
       </api.Provider>
     </QueryClientProvider>
   );

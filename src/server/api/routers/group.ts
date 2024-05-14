@@ -41,7 +41,7 @@ export const groupRouter = createTRPCRouter({
     }),
 
   checkUser: protectedProcedure
-    .input(z.object({ groupId: z.string().min(1), userId: z.string().min(1) }))
+    .input(z.object({ groupId: z.string().min(1), userId: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.db.group.findFirst({
         where: {

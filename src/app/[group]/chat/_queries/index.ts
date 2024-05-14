@@ -4,7 +4,6 @@ import { useChannel } from 'ably/react';
 
 import { api } from '~/lib/trpc/react';
 import { messageTypes } from '~/lib/ably/shared';
-import { useLatestMessages } from '~/lib/zustand';
 
 const DEFAULT_PENDING_MSG = {
   createdAt: new Date(),
@@ -28,7 +27,6 @@ export const useInfiniteMessages = ({
 }) => {
   const utils = api.useUtils();
   const { channel } = useChannel(groupId);
-  const { addPreHeader } = useLatestMessages();
 
   const { data: messages, isLoading, refetch: refresh, fetchNextPage, hasNextPage, isFetchingNextPage } = api.post.getLatest.useInfiniteQuery({
     groupId,
@@ -69,7 +67,6 @@ export const useInfiniteMessages = ({
     },
     onSuccess: (message) => {
       if (message) {
-        addPreHeader(groupId, message.name);
         void channel.publish({
           name: messageTypes.NEW_MESSAGE,
           data: message,
