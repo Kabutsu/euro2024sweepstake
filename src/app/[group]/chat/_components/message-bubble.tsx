@@ -20,7 +20,7 @@ const MessageBubble = ({
   return (
     <div className={`flex flex-row items-end gap-1 sm:gap-2 my-1 ${isSender ? "" : "mr-auto"}`}>
       <Image
-        src={avatar ?? "/images/icons/user-solid.svg"}
+        src={avatar ?? "/images/user-solid.svg"}
         alt="User avatar"
         width={100}
         height={100}
