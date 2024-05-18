@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getServerAuthSession } from "~/server/auth";
 
 import TopBar from './_components/top-bar';
+import RegisterButton from './_components/register-button';
 
 const selectAGroup = (
   <>
@@ -13,12 +14,16 @@ const selectAGroup = (
 );
 
 const signInButton = (
-  <Link
-    href="/api/auth/signin"
-    className="rounded-full bg-black/10 px-3 py-1 sm:px-4 sm:py-3 mr-1 sm:mr-2 text-xl sm:text-2xl font-semibold no-underline transition hover:bg-black/20"
-  >
-    Sign in
-  </Link>
+  <span className="inline">
+    <Link
+      href="/api/auth/signin"
+      className="rounded-full bg-blue-500 text-white px-3 py-1 sm:px-4 sm:py-3 mr-1 sm:mr-2 text-xl sm:text-2xl font-semibold no-underline transition hover:bg-blue-600"
+    >
+      Sign in
+    </Link>
+    or
+    <RegisterButton />
+  </span>
 );
 
 const topBarTitle = (

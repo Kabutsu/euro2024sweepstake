@@ -4,9 +4,10 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
+import { type JWT } from "next-auth/jwt";
 import { type Adapter } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
-import FacebookProvider from "next-auth/providers/facebook";
+import CredentialsPovider from 'next-auth/providers/credentials';
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -24,12 +25,27 @@ declare module "next-auth" {
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
+    accessToken: unknown;
   }
+}
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+async function refreshAccessToken(token: JWT) {
+  const exp = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+
+  await db.session.create({
+    data: {
+      userId: token.id as string,
+      expires: new Date(exp),
+      sessionToken: crypto.randomUUID(),
+    },
+    include: { user: true },
+  });
+
+  return {
+    ...token,
+    exp,
+    iat: Math.floor(Date.now() / 1000),
+  };
 }
 
 /**
@@ -38,14 +54,35 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    secret: env.NEXTAUTH_SECRET,
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    session: ({ session, user, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token ? token.id : user.id,
+        email: token ? token.email : user.email,
       },
     }),
+
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+      }
+
+      if (Math.floor(Date.now() / 1000) >= (token.exp as number)) {
+        return refreshAccessToken(token);
+      }
+
+      return token;
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
@@ -66,6 +103,29 @@ export const authOptions: NextAuthOptions = {
     //   clientId: env.FACEBOOK_CLIENT_ID,
     //   clientSecret: env.FACEBOOK_CLIENT_SECRET,
     // }),
+    CredentialsPovider({
+      name: 'Email',
+      credentials: {
+        username: { label: "Email", type: "text" },
+      },
+      async authorize(credentials) {
+        const username = credentials?.username;
+
+        if (!username) {
+          return null;
+        }
+
+        const user = await db.user.findUnique({
+          where: { email: username },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        return user;
+      },
+    }),
   ],
 };
 
