@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
         const username = credentials?.username;
 
         if (!username) {
-          throw new Error('Email is required');
+          return null;
         }
 
         const user = await db.user.findUnique({
@@ -120,7 +120,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          throw new Error(`No user found for username: ${username}`);
+          return null;
         }
 
         return user;

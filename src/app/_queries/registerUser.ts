@@ -10,7 +10,7 @@ export const useRegisterUser = () => {
   const router = useRouter();
   const { close } = useModal();
 
-  const { mutate: registerUser, isPending } = api.user.createUser.useMutation({
+  const { mutate: registerUser, isPending, error } = api.user.createUser.useMutation({
     onSuccess: async ({ email }) => {
       await signIn('credentials', {
         username: email,
@@ -21,5 +21,5 @@ export const useRegisterUser = () => {
     },
   });
 
-  return { registerUser, isPending };
+  return { registerUser, isPending, error };
 }
