@@ -5,7 +5,7 @@ import { api } from '~/lib/trpc/server';
 
 import { checkMembershipAndRedirect } from '../_actions';
 
-import ChannelWrapper from '../_components/channel-wrapper';
+import ChannelWrapper from '../../_components/channel-wrapper';
 
 import UsersArea from './_components/users-area/users-area';
 import DrawButton from './_components/draw/draw-button';

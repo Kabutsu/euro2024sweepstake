@@ -10,6 +10,7 @@ import NavItem from './nav-item';
 import LoadingGroups from './loading-groups';
 import Scroller from './scroller';
 import SearchArea from './search-area';
+import ChannelWrapper from '~/app/_components/channel-wrapper';
 
 type Props = {
   initialData: GroupsType;
@@ -37,7 +38,9 @@ const InteractableGroups = ({ initialData }: Props) => {
           <LoadingGroups />
         ) : (
           data?.map((group) => (
-            <NavItem key={group.id} group={group} />
+            <ChannelWrapper key={group.id} channelName={group.id}>
+              <NavItem group={group} />
+            </ChannelWrapper>
           ))
         )}
       </Scroller>

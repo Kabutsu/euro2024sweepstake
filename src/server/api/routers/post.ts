@@ -28,6 +28,18 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
+  getPreHeader: protectedProcedure
+    .input(z.object({ groupId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const posts = await ctx.db.post.findMany({
+        where: { groupId: input.groupId },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      });
+
+      return posts[0]?.name ?? "No messages yet";
+    }),
+
   getLatest: protectedProcedure
     .input(z.object({
       limit: z.number().min(1).max(50).nullish(),

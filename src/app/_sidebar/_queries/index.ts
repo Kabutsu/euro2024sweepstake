@@ -17,3 +17,18 @@ export const useGroups = ({
   
   return { data, isLoading: isLoading || isFetching };
 };
+
+export const usePreHeader = ({ groupId, userId }: { groupId: string, userId: string }) => {
+  const [user, { refetch: recheckUser }] = api.group.checkUser.useSuspenseQuery({ groupId, userId });
+
+  const [data, { refetch: fetchLatest }] = api.post.getPreHeader.useSuspenseQuery({ groupId });
+
+  return {
+    message: user ? data : "You are not a member of this group",
+    refetch: user ? fetchLatest : () => recheckUser().then(({ data }) => {
+      if (data) {
+        void fetchLatest();
+      }
+    }),
+  };
+};

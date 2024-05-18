@@ -10,22 +10,6 @@ export const useSidebar = create<SidebarState>((set) => ({
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
 }));
 
-type LatestMessagesState = {
-  preHeaders: Record<string, string>;
-  addPreHeader: (groupId: string, message: string) => void;
-};
-
-export const useLatestMessages = create<LatestMessagesState>((set) => ({
-  preHeaders: {},
-  addPreHeader: (groupId, message) =>
-    set((state) => ({
-      preHeaders: {
-        ...state.preHeaders,
-        [groupId]: message,
-      },
-    })),
-}));
-
 type ModalState = {
   isOpen: boolean;
   children: React.ReactNode;
