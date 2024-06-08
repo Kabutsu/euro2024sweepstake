@@ -43,7 +43,7 @@ const UserCard = ({ groupId, user, initialData, refreshData, index, totalUsers }
           {user.name}
         </h2>
         <p className="hidden sm:block text-lg font-normal truncate">
-          {user.email}
+          {''}
         </p>
         <div className={`sm:hidden ${draws.length ? 'flex' : 'hidden'} flex-row items-center flex-wrap gap-x-2 gap-y-3 pt-1`}>
           <FlagsGroup draws={draws} size="sm" timeout={timeout} />
