@@ -56,7 +56,7 @@ async function refreshAccessToken(token: JWT) {
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 60 * 24 * 60 * 60, // 60 days
   },
   jwt: {
     secret: env.NEXTAUTH_SECRET,
@@ -72,13 +72,17 @@ export const authOptions: NextAuthOptions = {
     }),
 
     jwt: ({ token, user }) => {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
-
-      if (Math.floor(Date.now() / 1000) >= (token.exp as number)) {
-        return refreshAccessToken(token);
+      try {
+        if (user) {
+          token.id = user.id;
+          token.email = user.email;
+        }
+  
+        if (Math.floor(Date.now() / 1000) >= (token.exp as number)) {
+          return refreshAccessToken(token);
+        }
+      } catch (err) {
+        console.error("Error during JWT callback:", err);
       }
 
       return token;
@@ -117,8 +121,13 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
   
-          const user = await db.user.findUnique({
-            where: { email: username },
+          const user = await db.user.findFirst({
+            where: {
+              email: {
+                equals: username,
+                mode: 'insensitive',
+              },
+            },
           });
   
           if (!user) {
