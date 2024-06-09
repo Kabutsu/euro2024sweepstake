@@ -109,23 +109,28 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Email", type: "text" },
       },
       async authorize(credentials) {
-        const username = credentials?.username?.trim();
-
-        if (!username) {
-          console.error("No email provided for Email Login");
+        try {
+          const username = credentials?.username?.trim();
+  
+          if (!username) {
+            console.error("No email provided for Email Login");
+            return null;
+          }
+  
+          const user = await db.user.findUnique({
+            where: { email: username },
+          });
+  
+          if (!user) {
+            console.error(`User with email "${username}" not found`);
+            return null;
+          }
+  
+          return user;
+        } catch (err) {
+          console.error("Error during Email Login:", err);
           return null;
         }
-
-        const user = await db.user.findUnique({
-          where: { email: username },
-        });
-
-        if (!user) {
-          console.error(`User with email "${username}" not found`);
-          return null;
-        }
-
-        return user;
       },
     }),
   ],
