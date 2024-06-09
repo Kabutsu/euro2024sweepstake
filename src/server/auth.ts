@@ -109,9 +109,10 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Email", type: "text" },
       },
       async authorize(credentials) {
-        const username = credentials?.username;
+        const username = credentials?.username?.trim();
 
         if (!username) {
+          console.error("No email provided for Email Login");
           return null;
         }
 
@@ -120,6 +121,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
+          console.error(`User with email "${username}" not found`);
           return null;
         }
 
